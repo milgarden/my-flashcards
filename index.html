@@ -3,13 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AWS SAA 攻略単語帳 Pro+</title>
+    <title>AWS SAA 攻略単語帳 Pro+ Select</title>
     <style>
         body { font-family: -apple-system, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; background: #f0f2f5; overflow: hidden; }
         #card { background: white; width: 92%; max-width: 500px; min-height: 350px; display: flex; flex-direction: column; justify-content: center; align-items: center; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); text-align: center; padding: 30px; box-sizing: border-box; position: relative; cursor: pointer; }
         .label { color: #007aff; font-size: 1rem; font-weight: 600; margin-bottom: 15px; }
-        .content { color: #1c1c1e; font-size: clamp(1.2rem, 4.5vw, 1.8rem); font-weight: bold; line-height: 1.5; width: 100%; word-break: break-all; white-space: pre-wrap; }
+        .content { color: #1c1c1e; font-size: clamp(1.1rem, 4vw, 1.6rem); font-weight: bold; line-height: 1.6; width: 100%; word-break: break-all; white-space: pre-wrap; }
         #controls { margin-top: 25px; display: flex; flex-direction: column; align-items: center; gap: 15px; width: 100%; }
+        
+        /* セレクトボックスのスタイル */
+        select { padding: 12px; font-size: 1rem; border-radius: 10px; border: 1px solid #ccc; width: 80%; max-width: 300px; background: white; }
+        
         .btn-group { display: none; gap: 20px; width: 100%; justify-content: center; margin-top: 15px; }
         button { padding: 15px 30px; font-size: 1.2rem; border: none; border-radius: 15px; cursor: pointer; font-weight: bold; transition: 0.2s; }
         #start-btn { background: #007aff; color: white; }
@@ -17,6 +21,7 @@
         #show-answer-btn { background: #5856d6; color: white; display: none; }
         .correct-btn { background: #34c759; color: white; flex: 1; max-width: 140px; }
         .wrong-btn { background: #ff3b30; color: white; flex: 1; max-width: 140px; }
+        
         #stats { margin-top: 10px; font-size: 0.9rem; color: #666; }
         #reset-btn { margin-top: 20px; background: none; color: #999; font-size: 0.8rem; text-decoration: underline; padding: 5px; }
         .skip-hint { position: absolute; bottom: 15px; font-size: 0.7rem; color: #ccc; }
@@ -25,13 +30,16 @@
 <body>
 
     <div id="card">
-        <div id="label" class="label">READYかな？</div>
-        <div id="content" class="content">CSVを選択して開始してください</div>
+        <div id="label" class="label">READY</div>
+        <div id="content" class="content">学習カテゴリを選択してください</div>
         <div class="skip-hint">読み上げ中にタップでスキップ</div>
     </div>
 
     <div id="controls">
-        <input type="file" id="file-input" accept=".csv">
+        <select id="category-select">
+            <option value="">-- カテゴリを選択 --</option>
+        </select>
+        
         <button id="start-btn" style="display:none;">学習を開始する</button>
         
         <button id="wait-btn" onclick="pauseTimer()">ちょっと待って！</button>
@@ -41,16 +49,18 @@
             <button class="wrong-btn" onclick="handleResult(false)">❌ まだ</button>
             <button class="correct-btn" onclick="handleResult(true)">⭕️ おぼえた</button>
         </div>
+        
         <div id="stats"></div>
         <button id="reset-btn" onclick="resetMemory()">学習記録をリセット</button>
     </div>
 
     <script src="dict.js"></script>
+    <script src="config.js"></script>
 
     <script>
         const labelEl = document.getElementById('label');
         const contentEl = document.getElementById('content');
-        const fileInput = document.getElementById('file-input');
+        const categorySelect = document.getElementById('category-select');
         const startBtn = document.getElementById('start-btn');
         const waitBtn = document.getElementById('wait-btn');
         const showBtn = document.getElementById('show-answer-btn');
@@ -65,22 +75,53 @@
         let isAnswering = false;
         let isPaused = false;
 
-        fileInput.addEventListener('change', (e) => {
-            const reader = new FileReader();
-            reader.onload = () => {
-                const rows = reader.result.split(/\r\n|\n/).map(line => line.split(','));
-                const rawData = rows.slice(1).filter(r => r.length >= 2 && r[0].trim());
+        // config.js からメニューを生成
+        if (typeof categoryFiles !== 'undefined') {
+            categoryFiles.forEach(item => {
+                const opt = document.createElement('option');
+                opt.value = item.file;
+                opt.textContent = item.name;
+                categorySelect.appendChild(opt);
+            });
+        }
+
+        // カテゴリが選択されたらファイルをロード
+        categorySelect.addEventListener('change', async (e) => {
+            const fileName = e.target.value;
+            if (!fileName) return;
+
+            try {
+                const response = await fetch(fileName);
+                if (!response.ok) throw new Error("File not found");
+                const text = await response.text();
+                
+                // CSVパース（カンマ区切り、空行除外）
+                const lines = text.split(/\r\n|\n/);
+                const rawData = lines.slice(1)
+                                     .map(line => line.split(','))
+                                     .filter(r => r.length >= 2 && r[0].trim());
+                
+                // 既習得単語の除外
                 const learnedWords = JSON.parse(localStorage.getItem('learnedWords') || '[]');
-                dataRows = rawData.filter(row => !learnedWords.includes(row[1]));
-                fileInput.style.display = 'none';
-                startBtn.style.display = 'block';
+                dataRows = rawData.filter(row => !learnedWords.includes(row[1].trim()));
+                
+                if (dataRows.length === 0) {
+                    contentEl.innerText = "このカテゴリには\n未習得の単板がありません。";
+                    startBtn.style.display = 'none';
+                } else {
+                    contentEl.innerText = `${categorySelect.selectedOptions[0].text}\nを読み込みました。\n全 ${dataRows.length} 問`;
+                    startBtn.style.display = 'block';
+                }
                 updateStats();
-            };
-            reader.readAsText(e.target.files[0]);
+            } catch (err) {
+                contentEl.innerText = "エラー: ファイルの読み込みに失敗しました。\n" + fileName;
+                console.error(err);
+            }
         });
 
         startBtn.addEventListener('click', () => {
             startBtn.style.display = 'none';
+            categorySelect.style.display = 'none';
             synth.speak(new SpeechSynthesisUtterance(""));
             nextQuestion();
         });
@@ -95,8 +136,9 @@
         async function nextQuestion() {
             if (dataRows.length === 0) {
                 labelEl.innerText = "COMPLETE";
-                contentEl.innerText = "全て覚えました！";
+                contentEl.innerText = "全て覚えました！\n他のカテゴリを選んでください。";
                 btnGroup.style.display = 'none';
+                categorySelect.style.display = 'block';
                 return;
             }
             if (currentIndex >= dataRows.length) currentIndex = 0;
@@ -146,7 +188,7 @@
             btnGroup.style.display = 'none';
             if (isCorrect) {
                 const learnedWords = JSON.parse(localStorage.getItem('learnedWords') || '[]');
-                learnedWords.push(dataRows[currentIndex][1]);
+                learnedWords.push(dataRows[currentIndex][1].trim());
                 localStorage.setItem('learnedWords', JSON.stringify(learnedWords));
                 dataRows.splice(currentIndex, 1); 
             } else {
@@ -156,7 +198,7 @@
         }
 
         function resetMemory() {
-            if (confirm("学習記録をすべてリセットしますか？")) {
+            if (confirm("全カテゴリの学習記録をリセットしますか？")) {
                 localStorage.removeItem('learnedWords');
                 location.reload();
             }
@@ -168,9 +210,10 @@
                 labelEl.innerText = label;
                 contentEl.innerText = text;
                 let speechText = text;
-                // ここで外部の dict オブジェクトを使用しています
-                for (const [k, v] of Object.entries(dict)) {
-                    speechText = speechText.replace(new RegExp(k, 'gi'), v);
+                if (typeof dict !== 'undefined') {
+                    for (const [k, v] of Object.entries(dict)) {
+                        speechText = speechText.replace(new RegExp(k, 'gi'), v);
+                    }
                 }
                 const utter = new SpeechSynthesisUtterance(speechText);
                 utter.lang = 'ja-JP';
