@@ -61,6 +61,7 @@
         let resolvePlay;
         let timerId = null;
         let isAnswering = false;
+        let isPaused = false; // 一時停止中かどうかを管理する新しいフラグ
 
         const dict = { "AWS": "エーダブリューエス", "SAA": "エスエーエー", "ICT": "アイシーティー", "S3": "エススリー", "EC2": "イーシーつー", "EBS": "イービーエス", "VPC": "ブイピーシー", "IAM": "アイアム", "RDS": "アールディーエス", "Lambda": "ラムダ", "DynamoDB": "ダイナモディービー", "CloudFront": "クラウドフロント", "Route 53": "ルートフィフティスリー", "ELB": "イーエルビー", "ALB": "エーエルビー", "NLB": "エヌエルビー", "SQS": "エスキューエス", "SNS": "エスエヌエス", "Kinesis": "キネシス", "Redshift": "レッドシフト", "Aurora": "オーロラ", "CloudWatch": "クラウドウォッチ", "CloudTrail": "クラウドトレイル", "CloudFormation": "クラウドフォーメーション", "Auto Scaling": "オートスケーリング", "ASG": "エーエスジー", "Glacier": "グレイシア", "EFS": "イーエフエス", "Storage Gateway": "ストレージゲートウェイ", "Direct Connect": "ダイレクトコネクト", "DX": "ディーエックス", "NAT Gateway": "ナットゲートウェイ", "ACM": "エーシーエム", "KMS": "ケーエムエス", "Fargate": "ファーゲート", "ECS": "イーシーエス", "EKS": "イーケーエス", "WAF": "ワフ", "Shield": "シールド", "Config": "コンフィグ", "Organizations": "オーガニゼーションズ", "FSx": "エフエスエックス", "Inspector": "インスペクター", "GuardDuty": "ガードデューティ", "Macie": "メイシー", "Artifact": "アーティファクト", "X-Ray": "エックスレイ" };
 
@@ -103,6 +104,7 @@
             updateStats();
 
             isAnswering = false;
+            isPaused = false;
             btnGroup.style.display = 'none';
             showBtn.style.display = 'none';
             
@@ -111,15 +113,16 @@
             await playCard("【 解説 】", row[0], 5000); 
             waitBtn.style.display = 'none';
 
-            // 回答表示フェーズ
-            if (!isAnswering) { // 一時停止されていなければ次へ
-                showAnswer();
-            }
+            // もし「ちょっと待って」が押されていたら、ここで止まる
+            if (isPaused) return; 
+
+            showAnswer();
         }
 
         function pauseTimer() {
+            isPaused = true; // フラグを立てる
             if (timerId) {
-                clearTimeout(timerId); // 自動遷移タイマーを止める
+                clearTimeout(timerId); // 【最重要】動いているタイマーを物理的に消去
                 timerId = null;
             }
             waitBtn.style.display = 'none';
@@ -129,7 +132,8 @@
 
         function resumeToAnswer() {
             showBtn.style.display = 'none';
-            if (resolvePlay) resolvePlay(); // Promiseを解決して回答へ
+            isPaused = false;
+            showAnswer(); // 直接回答表示へ進む
         }
 
         async function showAnswer() {
@@ -173,12 +177,10 @@
                 const utter = new SpeechSynthesisUtterance(speechText);
                 utter.lang = 'ja-JP';
                 utter.onend = () => {
-                    // 読み上げ終了後に指定時間待つ（タイマーIDを保存）
+                    // 読み上げ終了後に指定時間待つ
                     timerId = setTimeout(() => { 
-                        if(resolvePlay === resolve) {
-                            timerId = null;
-                            resolve(); 
-                        }
+                        timerId = null;
+                        resolve(); 
                     }, delay);
                 };
                 utter.onerror = () => resolve();
