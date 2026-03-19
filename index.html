@@ -3,14 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>自作単語帳アプリ神田</title>
+    <title>自作単語帳アプリ</title>
     <style>
-        body { font-family: -apple-system, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; background: #f0f2f5; }
+        body { font-family: -apple-system, "Helvetica Neue", sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; background: #f0f2f5; }
         #card { background: white; width: 90%; max-width: 500px; min-height: 320px; display: flex; flex-direction: column; justify-content: center; align-items: center; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); text-align: center; padding: 40px; box-sizing: border-box; }
         .label { color: #007aff; font-size: 1.1rem; font-weight: 600; margin-bottom: 20px; }
         .content { color: #1c1c1e; font-size: clamp(1.3rem, 4vw, 2rem); font-weight: bold; line-height: 1.6; width: 100%; word-break: break-all; white-space: pre-wrap; }
         #controls { margin-top: 30px; display: flex; flex-direction: column; align-items: center; gap: 15px; }
-        button { padding: 12px 24px; font-size: 1.1rem; background: #007aff; color: white; border: none; border-radius: 10px; cursor: pointer; }
+        button { padding: 14px 28px; font-size: 1.1rem; background: #007aff; color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; }
+        button:active { background: #005bb5; }
     </style>
 </head>
 <body>
@@ -33,27 +34,74 @@
         const synth = window.speechSynthesis;
         let dataRows = [];
 
-        // ファイル選択時の処理
+// 【カスタマイズ】SAA試験対策・誤読防止辞書
+        const dict = {
+            "AWS": "エーダブリューエス",
+            "SAA": "エスエーエー",
+            "ICT": "アイシーティー",
+            "S3": "エススリー",
+            "EC2": "イーシーツー",
+            "EBS": "イービーエス",
+            "VPC": "ブイピーシー",
+            "IAM": "アイアム",
+            "RDS": "アールディーエス",
+            "Lambda": "ラムダ",
+            "DynamoDB": "ダイナモディービー",
+            "CloudFront": "クラウドフロント",
+            "Route 53": "ルートフィフティスリー",
+            "ELB": "イーエルビー",
+            "ALB": "エーエルビー",
+            "NLB": "エヌエルビー",
+            "SQS": "エスキューエス",
+            "SNS": "エスエヌエス",
+            "Kinesis": "キネシス",
+            "Redshift": "レッドシフト",
+            "Aurora": "オーロラ",
+            "CloudWatch": "クラウドウォッチ",
+            "CloudTrail": "クラウドトレイル",
+            "CloudFormation": "クラウドフォーメーション",
+            "Auto Scaling": "オートスケーリング",
+            "ASG": "エーエスジー",
+            "Glacier": "グレイシア",
+            "EFS": "イーエフエス",
+            "Storage Gateway": "ストレージゲートウェイ",
+            "Direct Connect": "ダイレクトコネクト",
+            "DX": "ディーエックス",
+            "NAT Gateway": "ナットゲートウェイ",
+            "ACM": "エーシーエム",
+            "KMS": "ケーエムエス",
+            "Fargate": "ファーゲート",
+            "ECS": "イーシーエス",
+            "EKS": "イーケーエス",
+            "WAF": "ワフ",
+            "Shield": "シールド",
+            "Config": "コンフィグ",
+            "Organizations": "オーガニゼーションズ",
+            "FSx": "エフエスエックス",
+            "Inspector": "インスペクター",
+            "GuardDuty": "ガードデューティ",
+            "Macie": "メイシー",
+            "Artifact": "アーティファクト",
+            "X-Ray": "エックスレイ"
+        };
+
         fileInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             const reader = new FileReader();
             reader.onload = () => {
                 const allRows = reader.result.split(/\r\n|\n/).map(line => line.split(','));
-                dataRows = allRows.slice(1); // 2行目から取得
+                dataRows = allRows.slice(1);
                 fileInput.style.display = 'none';
-                startBtn.style.display = 'block'; // 開始ボタンを表示
-                contentEl.innerText = "準備ができました。\n開始ボタンを押してください。";
+                startBtn.style.display = 'block';
+                contentEl.innerText = "準備完了！\n開始ボタンを押すと読み上げます。";
             };
             reader.readAsText(file);
         });
 
-        // 開始ボタンクリック時の処理（ここでiPhoneの音声を「起こす」）
         startBtn.addEventListener('click', () => {
             startBtn.style.display = 'none';
-            // iPhone用の無音再生（これがないと動かない場合がある）
-            const utter = new SpeechSynthesisUtterance("");
-            synth.speak(utter);
-            
+            // iPhoneの音声をアクティブにするためのダミー再生
+            synth.speak(new SpeechSynthesisUtterance(""));
             startStudy();
         });
 
@@ -64,19 +112,27 @@
                 await playCard("【 回答 】", row[1], 5000);
             }
             labelEl.innerText = "COMPLETE";
-            contentEl.innerText = "すべての学習が終わりました！";
+            contentEl.innerText = "お疲れ様でした！";
         }
 
         function playCard(label, text, delay) {
             return new Promise((resolve) => {
                 labelEl.innerText = label;
                 contentEl.innerText = text;
+
+                // 読み上げ用のテキストを作成（辞書に基づいて置換）
+                let speechText = text;
+                for (const [key, value] of Object.entries(dict)) {
+                    // 大文字小文字を区別せず置換する正規表現
+                    const reg = new RegExp(key, 'gi');
+                    speechText = speechText.replace(reg, value);
+                }
                 
-                const utter = new SpeechSynthesisUtterance(text);
+                const utter = new SpeechSynthesisUtterance(speechText);
                 utter.lang = 'ja-JP';
-                utter.onend = () => setTimeout(resolve, delay);
+                utter.rate = 1.0;
                 
-                // 読み上げエラー対策
+                utter.onend = () => setTimeout(resolve, delay);
                 utter.onerror = () => resolve();
                 
                 synth.speak(utter);
