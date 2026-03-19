@@ -3,27 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>自作単語帳アプリ</title>
+    <title>AWS SAA 攻略単語帳 Pro+</title>
     <style>
-        body { font-family: -apple-system, "Helvetica Neue", sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; background: #f0f2f5; }
-        #card { background: white; width: 90%; max-width: 500px; min-height: 320px; display: flex; flex-direction: column; justify-content: center; align-items: center; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); text-align: center; padding: 40px; box-sizing: border-box; }
-        .label { color: #007aff; font-size: 1.1rem; font-weight: 600; margin-bottom: 20px; }
-        .content { color: #1c1c1e; font-size: clamp(1.3rem, 4vw, 2rem); font-weight: bold; line-height: 1.6; width: 100%; word-break: break-all; white-space: pre-wrap; }
-        #controls { margin-top: 30px; display: flex; flex-direction: column; align-items: center; gap: 15px; }
-        button { padding: 14px 28px; font-size: 1.1rem; background: #007aff; color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; }
-        button:active { background: #005bb5; }
+        body { font-family: -apple-system, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; background: #f0f2f5; overflow: hidden; }
+        #card { background: white; width: 92%; max-width: 500px; min-height: 350px; display: flex; flex-direction: column; justify-content: center; align-items: center; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); text-align: center; padding: 30px; box-sizing: border-box; position: relative; cursor: pointer; }
+        .label { color: #007aff; font-size: 1rem; font-weight: 600; margin-bottom: 15px; }
+        .content { color: #1c1c1e; font-size: clamp(1.2rem, 4.5vw, 1.8rem); font-weight: bold; line-height: 1.5; width: 100%; word-break: break-all; white-space: pre-wrap; }
+        #controls { margin-top: 25px; display: flex; flex-direction: column; align-items: center; gap: 15px; width: 100%; }
+        .btn-group { display: none; gap: 20px; width: 100%; justify-content: center; margin-top: 15px; }
+        button { padding: 15px 30px; font-size: 1.2rem; border: none; border-radius: 15px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        #start-btn { background: #007aff; color: white; }
+        .correct-btn { background: #34c759; color: white; flex: 1; max-width: 140px; }
+        .wrong-btn { background: #ff3b30; color: white; flex: 1; max-width: 140px; }
+        #stats { margin-top: 10px; font-size: 0.9rem; color: #666; }
+        #reset-btn { margin-top: 20px; background: none; color: #999; font-size: 0.8rem; text-decoration: underline; padding: 5px; }
+        .skip-hint { position: absolute; bottom: 15px; font-size: 0.7rem; color: #ccc; }
     </style>
 </head>
 <body>
 
     <div id="card">
-        <div id="label" class="label">READYかな？</div>
-        <div id="content" class="content">CSVを選択して<br>開始ボタンを押してください</div>
+        <div id="label" class="label">READY</div>
+        <div id="content" class="content">CSVを選択して<br>学習を開始してください</div>
+        <div class="skip-hint">読み上げ中にタップでスキップ</div>
     </div>
 
     <div id="controls">
         <input type="file" id="file-input" accept=".csv">
         <button id="start-btn" style="display:none;">学習を開始する</button>
+        <div id="btn-group" class="btn-group">
+            <button class="wrong-btn" onclick="handleResult(false)">❌ まだ</button>
+            <button class="correct-btn" onclick="handleResult(true)">⭕️ おぼえた</button>
+        </div>
+        <div id="stats"></div>
+        <button id="reset-btn" onclick="resetMemory()">学習記録をリセット</button>
     </div>
 
     <script>
@@ -31,112 +44,109 @@
         const contentEl = document.getElementById('content');
         const fileInput = document.getElementById('file-input');
         const startBtn = document.getElementById('start-btn');
+        const btnGroup = document.getElementById('btn-group');
+        const statsEl = document.getElementById('stats');
         const synth = window.speechSynthesis;
+        
         let dataRows = [];
+        let currentIndex = 0;
+        let resolvePlay;
+        let isAnswering = false;
 
-// 【カスタマイズ】SAA試験対策・誤読防止辞書
-        const dict = {
-            "AWS": "エーダブリューエス",
-            "SAA": "エスエーエー",
-            "ICT": "アイシーティー",
-            "S3": "エススリー",
-            "EC2": "イーシーツー",
-            "EBS": "イービーエス",
-            "VPC": "ブイピーシー",
-            "IAM": "アイアム",
-            "RDS": "アールディーエス",
-            "Lambda": "ラムダ",
-            "DynamoDB": "ダイナモディービー",
-            "CloudFront": "クラウドフロント",
-            "Route 53": "ルートフィフティスリー",
-            "ELB": "イーエルビー",
-            "ALB": "エーエルビー",
-            "NLB": "エヌエルビー",
-            "SQS": "エスキューエス",
-            "SNS": "エスエヌエス",
-            "Kinesis": "キネシス",
-            "Redshift": "レッドシフト",
-            "Aurora": "オーロラ",
-            "CloudWatch": "クラウドウォッチ",
-            "CloudTrail": "クラウドトレイル",
-            "CloudFormation": "クラウドフォーメーション",
-            "Auto Scaling": "オートスケーリング",
-            "ASG": "エーエスジー",
-            "Glacier": "グレイシア",
-            "EFS": "イーエフエス",
-            "Storage Gateway": "ストレージゲートウェイ",
-            "Direct Connect": "ダイレクトコネクト",
-            "DX": "ディーエックス",
-            "NAT Gateway": "ナットゲートウェイ",
-            "ACM": "エーシーエム",
-            "KMS": "ケーエムエス",
-            "Fargate": "ファーゲート",
-            "ECS": "イーシーエス",
-            "EKS": "イーケーエス",
-            "WAF": "ワフ",
-            "Shield": "シールド",
-            "Config": "コンフィグ",
-            "Organizations": "オーガニゼーションズ",
-            "FSx": "エフエスエックス",
-            "Inspector": "インスペクター",
-            "GuardDuty": "ガードデューティ",
-            "Macie": "メイシー",
-            "Artifact": "アーティファクト",
-            "X-Ray": "エックスレイ"
-        };
+        const dict = { "AWS": "エーダブリューエス", "SAA": "エスエーエー", "ICT": "アイシーティー", "S3": "エススリー", "EC2": "イーシーつー", "EBS": "イービーエス", "VPC": "ブイピーシー", "IAM": "アイアム", "RDS": "アールディーエス", "Lambda": "ラムダ", "DynamoDB": "ダイナモディービー", "CloudFront": "クラウドフロント", "Route 53": "ルートフィフティスリー", "ELB": "イーエルビー", "ALB": "エーエルビー", "NLB": "エヌエルビー", "SQS": "エスキューエス", "SNS": "エスエヌエス", "Kinesis": "キネシス", "Redshift": "レッドシフト", "Aurora": "オーロラ", "CloudWatch": "クラウドウォッチ", "CloudTrail": "クラウドトレイル", "CloudFormation": "クラウドフォーメーション", "Auto Scaling": "オートスケーリング", "ASG": "エーエスジー", "Glacier": "グレイシア", "EFS": "イーエフエス", "Storage Gateway": "ストレージゲートウェイ", "Direct Connect": "ダイレクトコネクト", "DX": "ディーエックス", "NAT Gateway": "ナットゲートウェイ", "ACM": "エーシーエム", "KMS": "ケーエムエス", "Fargate": "ファーゲート", "ECS": "イーシーエス", "EKS": "イーケーエス", "WAF": "ワフ", "Shield": "シールド", "Config": "コンフィグ", "Organizations": "オーガニゼーションズ", "FSx": "エフエスエックス", "Inspector": "インスペクター", "GuardDuty": "ガードデューティ", "Macie": "メイシー", "Artifact": "アーティファクト", "X-Ray": "エックスレイ" };
 
         fileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
             const reader = new FileReader();
             reader.onload = () => {
-                const allRows = reader.result.split(/\r\n|\n/).map(line => line.split(','));
-                dataRows = allRows.slice(1);
+                const rows = reader.result.split(/\r\n|\n/).map(line => line.split(','));
+                const rawData = rows.slice(1).filter(r => r.length >= 2 && r[0].trim());
+                const learnedWords = JSON.parse(localStorage.getItem('learnedWords') || '[]');
+                dataRows = rawData.filter(row => !learnedWords.includes(row[1]));
                 fileInput.style.display = 'none';
                 startBtn.style.display = 'block';
-                contentEl.innerText = "準備完了！\n開始ボタンを押すと読み上げます。";
+                updateStats();
             };
-            reader.readAsText(file);
+            reader.readAsText(e.target.files[0]);
         });
 
         startBtn.addEventListener('click', () => {
             startBtn.style.display = 'none';
-            // iPhoneの音声をアクティブにするためのダミー再生
             synth.speak(new SpeechSynthesisUtterance(""));
-            startStudy();
+            nextQuestion();
         });
 
-        async function startStudy() {
-            for (const row of dataRows) {
-                if (row.length < 2 || !row[0].trim()) continue;
-                await playCard("【 解説 】", row[0], 5000);
-                await playCard("【 回答 】", row[1], 5000);
+        document.getElementById('card').addEventListener('click', () => {
+            if (synth.speaking) {
+                synth.cancel(); 
+                if (resolvePlay) resolvePlay(); 
             }
-            labelEl.innerText = "COMPLETE";
-            contentEl.innerText = "お疲れ様でした！";
+        });
+
+        async function nextQuestion() {
+            if (dataRows.length === 0) {
+                labelEl.innerText = "COMPLETE";
+                contentEl.innerText = "学習する単語がありません！";
+                btnGroup.style.display = 'none';
+                return;
+            }
+            if (currentIndex >= dataRows.length) currentIndex = 0;
+            const row = dataRows[currentIndex];
+            updateStats();
+
+            isAnswering = false;
+            btnGroup.style.display = 'none';
+            
+            // 【重要】解説の読み上げ。この後の待機時間を5秒に設定
+            await playCard("【 解説 】", row[0], 5000); 
+
+            isAnswering = true;
+            btnGroup.style.display = 'flex';
+            // 回答の後の待機時間は1.5秒（次へスムーズに進むため）
+            await playCard("【 回答 】", row[1], 1500); 
         }
 
+        function handleResult(isCorrect) {
+            if (!isAnswering) return;
+            synth.cancel(); 
+            btnGroup.style.display = 'none';
+            if (isCorrect) {
+                const learnedWords = JSON.parse(localStorage.getItem('learnedWords') || '[]');
+                learnedWords.push(dataRows[currentIndex][1]);
+                localStorage.setItem('learnedWords', JSON.stringify(learnedWords));
+                dataRows.splice(currentIndex, 1); 
+            } else {
+                currentIndex++; 
+            }
+            nextQuestion();
+        }
+
+        function resetMemory() {
+            if (confirm("これまでの学習記録（おぼえた単語）をすべてリセットしますか？")) {
+                localStorage.removeItem('learnedWords');
+                location.reload();
+            }
+        }
+
+        // 引数 delay を追加して、待機時間を柔軟に変更できるようにしました
         function playCard(label, text, delay) {
             return new Promise((resolve) => {
+                resolvePlay = resolve;
                 labelEl.innerText = label;
                 contentEl.innerText = text;
-
-                // 読み上げ用のテキストを作成（辞書に基づいて置換）
                 let speechText = text;
-                for (const [key, value] of Object.entries(dict)) {
-                    // 大文字小文字を区別せず置換する正規表現
-                    const reg = new RegExp(key, 'gi');
-                    speechText = speechText.replace(reg, value);
+                for (const [k, v] of Object.entries(dict)) {
+                    speechText = speechText.replace(new RegExp(k, 'gi'), v);
                 }
-                
                 const utter = new SpeechSynthesisUtterance(speechText);
                 utter.lang = 'ja-JP';
-                utter.rate = 1.0;
-                
-                utter.onend = () => setTimeout(resolve, delay);
+                utter.onend = () => setTimeout(() => { if(resolvePlay === resolve) resolve(); }, delay);
                 utter.onerror = () => resolve();
-                
                 synth.speak(utter);
             });
+        }
+
+        function updateStats() {
+            statsEl.innerText = `未習得: ${dataRows.length} 問`;
         }
     </script>
 </body>
