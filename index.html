@@ -45,6 +45,8 @@
         <button id="reset-btn" onclick="resetMemory()">学習記録をリセット</button>
     </div>
 
+    <script src="dict.js"></script>
+
     <script>
         const labelEl = document.getElementById('label');
         const contentEl = document.getElementById('content');
@@ -61,9 +63,7 @@
         let resolvePlay;
         let timerId = null;
         let isAnswering = false;
-        let isPaused = false; // 一時停止中かどうかを管理する新しいフラグ
-
-        const dict = { "AWS": "エーダブリューエス", "SAA": "エスエーエー", "ICT": "アイシーティー", "S3": "エススリー", "EC2": "イーシーつー", "EBS": "イービーエス", "VPC": "ブイピーシー", "IAM": "アイアム", "RDS": "アールディーエス", "Lambda": "ラムダ", "DynamoDB": "ダイナモディービー", "CloudFront": "クラウドフロント", "Route 53": "ルートフィフティスリー", "ELB": "イーエルビー", "ALB": "エーエルビー", "NLB": "エヌエルビー", "SQS": "エスキューエス", "SNS": "エスエヌエス", "Kinesis": "キネシス", "Redshift": "レッドシフト", "Aurora": "オーロラ", "CloudWatch": "クラウドウォッチ", "CloudTrail": "クラウドトレイル", "CloudFormation": "クラウドフォーメーション", "Auto Scaling": "オートスケーリング", "ASG": "エーエスジー", "Glacier": "グレイシア", "EFS": "イーエフエス", "Storage Gateway": "ストレージゲートウェイ", "Direct Connect": "ダイレクトコネクト", "DX": "ディーエックス", "NAT Gateway": "ナットゲートウェイ", "ACM": "エーシーエム", "KMS": "ケーエムエス", "Fargate": "ファーゲート", "ECS": "イーシーエス", "EKS": "イーケーエス", "WAF": "ワフ", "Shield": "シールド", "Config": "コンフィグ", "Organizations": "オーガニゼーションズ", "FSx": "エフエスエックス", "Inspector": "インスペクター", "GuardDuty": "ガードデューティ", "Macie": "メイシー", "Artifact": "アーティファクト", "X-Ray": "エックスレイ" };
+        let isPaused = false;
 
         fileInput.addEventListener('change', (e) => {
             const reader = new FileReader();
@@ -108,21 +108,18 @@
             btnGroup.style.display = 'none';
             showBtn.style.display = 'none';
             
-            // 解説を表示・読み上げ。待機ボタンを表示
             waitBtn.style.display = 'block';
             await playCard("【 解説 】", row[0], 5000); 
             waitBtn.style.display = 'none';
 
-            // もし「ちょっと待って」が押されていたら、ここで止まる
             if (isPaused) return; 
-
             showAnswer();
         }
 
         function pauseTimer() {
-            isPaused = true; // フラグを立てる
+            isPaused = true;
             if (timerId) {
-                clearTimeout(timerId); // 【最重要】動いているタイマーを物理的に消去
+                clearTimeout(timerId);
                 timerId = null;
             }
             waitBtn.style.display = 'none';
@@ -133,7 +130,7 @@
         function resumeToAnswer() {
             showBtn.style.display = 'none';
             isPaused = false;
-            showAnswer(); // 直接回答表示へ進む
+            showAnswer();
         }
 
         async function showAnswer() {
@@ -171,13 +168,13 @@
                 labelEl.innerText = label;
                 contentEl.innerText = text;
                 let speechText = text;
+                // ここで外部の dict オブジェクトを使用しています
                 for (const [k, v] of Object.entries(dict)) {
                     speechText = speechText.replace(new RegExp(k, 'gi'), v);
                 }
                 const utter = new SpeechSynthesisUtterance(speechText);
                 utter.lang = 'ja-JP';
                 utter.onend = () => {
-                    // 読み上げ終了後に指定時間待つ
                     timerId = setTimeout(() => { 
                         timerId = null;
                         resolve(); 
