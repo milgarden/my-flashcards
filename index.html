@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>単語帳アプリ</title>
+    <style>
+        body { font-family: -apple-system, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #f4f4f9; }
+        #card { background: white; width: 85%; max-width: 400px; height: 280px; display: flex; flex-direction: column; justify-content: center; align-items: center; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; padding: 30px; border: 2px solid #e1e1e8; }
+        .label { color: #007aff; font-size: 1.1rem; font-weight: 600; margin-bottom: 15px; }
+        .content { color: #1c1c1e; font-size: 2rem; font-weight: bold; line-height: 1.4; }
+        #file-input { margin-top: 30px; font-size: 1rem; }
+    </style>
+</head>
+<body>
+    <div id="card">
+        <div id="label" class="label">準備完了</div>
+        <div id="content" class="content">CSVファイルを選択してください</div>
+    </div>
+    <input type="file" id="file-input" accept=".csv">
+
+    <script>
+        const labelEl = document.getElementById('label');
+        const contentEl = document.getElementById('content');
+        const fileInput = document.getElementById('file-input');
+        const synth = window.speechSynthesis;
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = () => {
+                // CSVを改行で区切り、さらにカンマで分割して配列化
+                const allRows = reader.result.split(/\r\n|\n/).map(line => line.split(','));
+                
+                // 【修正ポイント】1行目（インデックス0）を飛ばして、2行目（インデックス1）から取得
+                const dataRows = allRows.slice(1);
+                
+                fileInput.style.display = 'none';
+                startStudy(dataRows);
+            };
+            reader.readAsText(file);
+        });
+
+        async function startStudy(rows) {
+            for (const row of rows) {
+                // 空行や列が足りない行はスキップ
+                if (row.length < 2 || !row[0].trim()) continue;
+
+                // 1. 解説を表示・読み上げ
+                await playCard("【解説】", row[0], 5000);
+
+                // 2. 回答を表示・読み上げ
+                await playCard("【回答】", row[1], 5000);
+            }
+            labelEl.innerText = "終了";
+            contentEl.innerText = "学習が完了しました！";
+        }
+
+        function playCard(label, text, delay) {
+            return new Promise((resolve) => {
+                labelEl.innerText = label;
+                contentEl.innerText = text;
+                
+                const utter = new SpeechSynthesisUtterance(text);
+                utter.lang = 'ja-JP';
+                utter.rate = 1.0; 
+
+                utter.onend = () => {
+                    // 読み上げが終わってから5秒待機
+                    setTimeout(resolve, delay);
+                };
+                
+                synth.speak(utter);
+            });
+        }
+    </script>
+</body>
+</html>
