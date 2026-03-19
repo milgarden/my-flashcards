@@ -1,0 +1,22 @@
+FrontText,BackText,Comment,FrontTextLanguage,BackTextLanguage
+Well-Architected Frameworkで提唱さている6つの設計原則の、語呂合わせと６つの原則を言え,"CORPSS
+Cost Optimization
+Operational Excellence
+Reliability
+Performance Efficiency
+Security
+Sustainability",Well-Architected,ja-JP,ja-JP
+Well-Architected Frameworkの3つの内容,"①ホワイトペーパー
+②AWSのSAまたは認定パートナーによる支援制度
+③Well-Architected Tool",Well-Architected,ja-JP,ja-JP
+障害による中断・停止と障害復旧による影響を軽減するインフラストラクチャ－を構成して、基盤、変更管理、障害管理の３つを対応領域とするのは、どの柱か？,Reliability：信頼性,Well-Architected,ja-JP,ja-JP
+システム要件のリソース最適化によるインフラの効率化を行い、コンピューティング、ストレージ、データベース、容量と時間のトレードオフの4つを対応領域とするのは、どの柱か？,Performance Efficiency：パフォーマンス効率,Well-Architected,ja-JP,ja-JP
+AWS内のデータ／システム／アセットの保護とモニタリングによりセキュリティを高め、データ保護、権限管理、インフラ保護、検出制御の4つを対応領域とするのは、どの柱か？,Security：セキュリティ,Well-Architected,ja-JP,ja-JP
+不必要なリソースの削減や最適な料金選択によりコストを削減して、需要と供給の一致、コスト効率の高いリソース、支出の認識、継続した最適化の4つを対応領域とするのは、どの柱か？,Cost Optimization：コスト最適化,Well-Architected,ja-JP,ja-JP
+計画変更が起こった場合や予期せぬイベントの発生時において、自動化された運用実務及び文書化されテストされレビューされた手順を設定して、準備、運用、進化の3つを対応領域とするのは、どの柱か？,Operational Excellence：運用上の優秀性,Well-Architected,ja-JP,ja-JP
+AWSはクラウドのサステイナビリティの推進によって、インフラに関連するエネルギー使用率を80％削減を目指し、ユーザー側はクラウドを利用した効率的なアプリケーション設計やサービス選択を実施するのは、どの柱か？エネルギー効率,Sustainability：持続可能性,Well-Architected,ja-JP,ja-JP
+特定のビジネス価値を生み出す、相互に関連するリソース（EC2、DB等）の集合体としてのシステムの単位。評価単位、ビジネス価値、リソースの集合,ワークロード,Well-Architected,ja-JP,ja-JP
+設計の変更やアーキテクチャの進化を記録するための、特定の時点におけるレビュー状態の保存データ。保存ポイント、履歴管理、設計の変遷,マイルストーン,Well-Architected,ja-JP,ja-JP
+ベストプラクティスに照らしてアーキテクチャを評価し、改善すべき分野を特定する一貫した方法。評価基準、ベストプラクティス、分野別テンプレート,レンズ (Lens),Well-Architected,ja-JP,ja-JP
+設計においてビジネスの継続性やセキュリティに重大な悪影響を及ぼす可能性があり、最優先で修正が必要な指摘事項は何？英３文字。優先対応、ビジネスへの致命的影響, (HRI)High Risk Issue：高リスクの問題,Well-Architected,ja-JP,ja-JP
+重大ではないが、ベストプラクティスから外れており、将来的に改善が推奨される指摘事項は何？段階的改善、運用効率, (MRI)Medium Risk Issue：中リスクの問題,Well-Architected,ja-JP,ja-JP

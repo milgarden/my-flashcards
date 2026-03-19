@@ -1,0 +1,16 @@
+FrontText,BackText,Comment,FrontTextLanguage,BackTextLanguage
+ビジネスや個人のニーズに沿った個別の予測コスト見積りを実施することができるサービスは何？,Pricing　Calculator,コスト最適化,ja-JP,ja-JP
+使用率データに基づいて、EC2インスタンスタイプ、EBSボリュームおよびLambda 関数の最適な設定を選択できる。最大２５％コスト削減を実施するサービスは何？,Compute Optimizer,コスト最適化,ja-JP,ja-JP
+整理：タグごとに使用量とコストをグループ化したコスト配分レポートを生成することができる機能は何？,AWSコスト配分タグ,コスト最適化,ja-JP,ja-JP
+整理： コストと使用量をチーム、コストセンター、地域、用途、その他の組織構造とコスト配分の必要性に応じて正確に分類できるCost Management（コスト管理）」サービス群の機能は何？,AWS Cost Categories,コスト最適化,ja-JP,ja-JP
+レポート：アプリケーションによって使用される共有 AWS リソースの消費を追跡し、全体の詳細なコスト内訳をレポートするサービスは何？,AWS Application Cost Profiler,コスト最適化,ja-JP,ja-JP
+レポート：AWS のコストと使用状況に関する最も包括的データを提供する「Billing and Cost Management（請求とコスト管理）」コンソール内で提供されている 「機能」は何？,CUR：コストと使用状況レポート,コスト最適化,ja-JP,ja-JP
+検査・レポート： AWS のコストと使用量の経時的変化を可視化して、カスタムレポートを作成してコストと使用量のデータを分析するサービスは何？,Cost Explorer,コスト最適化,ja-JP,ja-JP
+管理：機械学習により異常な支出と根本原因を特定して、想定外のコストが発生する回数を減らし、コントロールを強化するCost Explorer の一機能は何？。,AWS コスト異常検出,コスト最適化,ja-JP,ja-JP
+管理：CloudWatchのbilling機能により請求額に対するアラーム設定が可能なサービスは何？,CloudWatch,コスト最適化,ja-JP,ja-JP
+予算：カスタム予算を設定して、コストまたは使用量が予算額や予算量を超えた場合に細かくアラームを設定することができるサービスは何？,AWS Budgets,コスト最適化,ja-JP,ja-JP
+伸縮性：EC2および RDSインスタンスの開始スケジュールと停止スケジュールを設定して、AWS リソースコストを管理するAWS ソリューションは何？,AWS Instance Scheduler,コスト最適化,ja-JP,ja-JP
+リザーブ購入は「たまに動く」サービスではなく、「ずっと動いている（＝予約した方が安くなる）」という利用シーンが非常に多いため、リザーブド設定が用意されています。ＥＣ２と他は何のサービスがリザーブ設定されていますか？,ＤＢ（RDS、ElastiCache 、Redshift、DynamoDB）,コスト最適化,ja-JP,ja-JP
+Compute Savings Plans が適用できるサービス3種類は？,"EC2: すべてのインスタンスファミリー（C, M, R, Tなど）が対象です。
+Fargate: サーバーレスコンテナの実行料金に適用されます。
+Lambda: 関数の実行時間（Duration）とリクエスト料金に適用されます。",コスト最適化,ja-JP,ja-JP
