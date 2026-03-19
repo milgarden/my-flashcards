@@ -3,20 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>単語帳アプリ</title>
+    <title>自作単語帳アプリ</title>
     <style>
-        body { font-family: -apple-system, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #f4f4f9; }
-        #card { background: white; width: 85%; max-width: 400px; height: 280px; display: flex; flex-direction: column; justify-content: center; align-items: center; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; padding: 30px; border: 2px solid #e1e1e8; }
-        .label { color: #007aff; font-size: 1.1rem; font-weight: 600; margin-bottom: 15px; }
-        .content { color: #1c1c1e; font-size: 2rem; font-weight: bold; line-height: 1.4; }
-        #file-input { margin-top: 30px; font-size: 1rem; }
+        /* 画面全体のレイアウト */
+        body { 
+            font-family: -apple-system, "Helvetica Neue", "Hiragino Kaku Gothic ProN", sans-serif; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            min-height: 100vh; 
+            margin: 0; 
+            background: #f0f2f5; 
+        }
+
+        /* 単語カードのデザイン */
+        #card { 
+            background: white; 
+            width: 90%; 
+            max-width: 500px; /* PCで見ても大きすぎないサイズ */
+            min-height: 320px; /* 最低限の高さ */
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            border-radius: 30px; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1); 
+            text-align: center; 
+            padding: 40px; 
+            box-sizing: border-box; 
+            border: 1px solid #ddd;
+            transition: all 0.3s ease;
+        }
+
+        /* 【解説】【回答】のラベル部分 */
+        .label { 
+            color: #007aff; 
+            font-size: 1.1rem; 
+            font-weight: 600; 
+            margin-bottom: 20px;
+            letter-spacing: 0.1rem;
+        }
+
+        /* 本文（ここが自動で折り返され、高さも伸びます） */
+        .content { 
+            color: #1c1c1e; 
+            /* 文字数に応じてサイズを微調整する設定（最小1.3rem〜最大2rem） */
+            font-size: clamp(1.3rem, 4vw, 2rem); 
+            font-weight: bold; 
+            line-height: 1.6;
+            width: 100%;
+            word-break: break-all; /* 枠内での折り返しを確実に */
+            white-space: pre-wrap; /* 改行も維持 */
+        }
+
+        /* ファイル選択ボタン */
+        #file-input { 
+            margin-top: 40px; 
+            padding: 10px;
+            font-size: 1rem;
+        }
     </style>
 </head>
 <body>
+
     <div id="card">
-        <div id="label" class="label">準備完了</div>
-        <div id="content" class="content">CSVファイルを選択してください</div>
+        <div id="label" class="label">READY</div>
+        <div id="content" class="content">CSVファイルを選択して<br>学習を開始してください</div>
     </div>
+
     <input type="file" id="file-input" accept=".csv">
 
     <script>
@@ -28,13 +83,15 @@
         fileInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             const reader = new FileReader();
+            
             reader.onload = () => {
-                // CSVを改行で区切り、さらにカンマで分割して配列化
+                // CSVを配列に変換
                 const allRows = reader.result.split(/\r\n|\n/).map(line => line.split(','));
                 
-                // 【修正ポイント】1行目（インデックス0）を飛ばして、2行目（インデックス1）から取得
+                // 【修正】1行目（ヘッダー）を飛ばして2行目から開始
                 const dataRows = allRows.slice(1);
                 
+                // 開始時にボタンを隠す
                 fileInput.style.display = 'none';
                 startStudy(dataRows);
             };
@@ -43,17 +100,18 @@
 
         async function startStudy(rows) {
             for (const row of rows) {
-                // 空行や列が足りない行はスキップ
+                // 空行などは無視
                 if (row.length < 2 || !row[0].trim()) continue;
 
-                // 1. 解説を表示・読み上げ
-                await playCard("【解説】", row[0], 5000);
+                // 1. 解説（1列目）を表示・読み上げ → 5秒待機
+                await playCard("【 解説 】", row[0], 5000);
 
-                // 2. 回答を表示・読み上げ
-                await playCard("【回答】", row[1], 5000);
+                // 2. 回答（2列目）を表示・読み上げ → 5秒待機
+                await playCard("【 回答 】", row[1], 5000);
             }
-            labelEl.innerText = "終了";
-            contentEl.innerText = "学習が完了しました！";
+            
+            labelEl.innerText = "COMPLETE";
+            contentEl.innerText = "すべての学習が終わりました！";
         }
 
         function playCard(label, text, delay) {
@@ -63,10 +121,10 @@
                 
                 const utter = new SpeechSynthesisUtterance(text);
                 utter.lang = 'ja-JP';
-                utter.rate = 1.0; 
+                utter.rate = 1.0; // 読み上げ速度
 
                 utter.onend = () => {
-                    // 読み上げが終わってから5秒待機
+                    // 読み上げが終わってから指定秒数待つ
                     setTimeout(resolve, delay);
                 };
                 
