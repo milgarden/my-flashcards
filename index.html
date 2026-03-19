@@ -5,111 +5,64 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>自作単語帳アプリ</title>
     <style>
-        /* 画面全体のレイアウト */
-        body { 
-            font-family: -apple-system, "Helvetica Neue", "Hiragino Kaku Gothic ProN", sans-serif; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            min-height: 100vh; 
-            margin: 0; 
-            background: #f0f2f5; 
-        }
-
-        /* 単語カードのデザイン */
-        #card { 
-            background: white; 
-            width: 90%; 
-            max-width: 500px; /* PCで見ても大きすぎないサイズ */
-            min-height: 320px; /* 最低限の高さ */
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center; 
-            align-items: center; 
-            border-radius: 30px; 
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1); 
-            text-align: center; 
-            padding: 40px; 
-            box-sizing: border-box; 
-            border: 1px solid #ddd;
-            transition: all 0.3s ease;
-        }
-
-        /* 【解説】【回答】のラベル部分 */
-        .label { 
-            color: #007aff; 
-            font-size: 1.1rem; 
-            font-weight: 600; 
-            margin-bottom: 20px;
-            letter-spacing: 0.1rem;
-        }
-
-        /* 本文（ここが自動で折り返され、高さも伸びます） */
-        .content { 
-            color: #1c1c1e; 
-            /* 文字数に応じてサイズを微調整する設定（最小1.3rem〜最大2rem） */
-            font-size: clamp(1.3rem, 4vw, 2rem); 
-            font-weight: bold; 
-            line-height: 1.6;
-            width: 100%;
-            word-break: break-all; /* 枠内での折り返しを確実に */
-            white-space: pre-wrap; /* 改行も維持 */
-        }
-
-        /* ファイル選択ボタン */
-        #file-input { 
-            margin-top: 40px; 
-            padding: 10px;
-            font-size: 1rem;
-        }
+        body { font-family: -apple-system, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; background: #f0f2f5; }
+        #card { background: white; width: 90%; max-width: 500px; min-height: 320px; display: flex; flex-direction: column; justify-content: center; align-items: center; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); text-align: center; padding: 40px; box-sizing: border-box; }
+        .label { color: #007aff; font-size: 1.1rem; font-weight: 600; margin-bottom: 20px; }
+        .content { color: #1c1c1e; font-size: clamp(1.3rem, 4vw, 2rem); font-weight: bold; line-height: 1.6; width: 100%; word-break: break-all; white-space: pre-wrap; }
+        #controls { margin-top: 30px; display: flex; flex-direction: column; align-items: center; gap: 15px; }
+        button { padding: 12px 24px; font-size: 1.1rem; background: #007aff; color: white; border: none; border-radius: 10px; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <div id="card">
         <div id="label" class="label">READY</div>
-        <div id="content" class="content">CSVファイルを選択して<br>学習を開始してください</div>
+        <div id="content" class="content">CSVを選択して<br>開始ボタンを押してください</div>
     </div>
 
-    <input type="file" id="file-input" accept=".csv">
+    <div id="controls">
+        <input type="file" id="file-input" accept=".csv">
+        <button id="start-btn" style="display:none;">学習を開始する</button>
+    </div>
 
     <script>
         const labelEl = document.getElementById('label');
         const contentEl = document.getElementById('content');
         const fileInput = document.getElementById('file-input');
+        const startBtn = document.getElementById('start-btn');
         const synth = window.speechSynthesis;
+        let dataRows = [];
 
+        // ファイル選択時の処理
         fileInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             const reader = new FileReader();
-            
             reader.onload = () => {
-                // CSVを配列に変換
                 const allRows = reader.result.split(/\r\n|\n/).map(line => line.split(','));
-                
-                // 【修正】1行目（ヘッダー）を飛ばして2行目から開始
-                const dataRows = allRows.slice(1);
-                
-                // 開始時にボタンを隠す
+                dataRows = allRows.slice(1); // 2行目から取得
                 fileInput.style.display = 'none';
-                startStudy(dataRows);
+                startBtn.style.display = 'block'; // 開始ボタンを表示
+                contentEl.innerText = "準備ができました。\n開始ボタンを押してください。";
             };
             reader.readAsText(file);
         });
 
-        async function startStudy(rows) {
-            for (const row of rows) {
-                // 空行などは無視
+        // 開始ボタンクリック時の処理（ここでiPhoneの音声を「起こす」）
+        startBtn.addEventListener('click', () => {
+            startBtn.style.display = 'none';
+            // iPhone用の無音再生（これがないと動かない場合がある）
+            const utter = new SpeechSynthesisUtterance("");
+            synth.speak(utter);
+            
+            startStudy();
+        });
+
+        async function startStudy() {
+            for (const row of dataRows) {
                 if (row.length < 2 || !row[0].trim()) continue;
-
-                // 1. 解説（1列目）を表示・読み上げ → 5秒待機
                 await playCard("【 解説 】", row[0], 5000);
-
-                // 2. 回答（2列目）を表示・読み上げ → 5秒待機
                 await playCard("【 回答 】", row[1], 5000);
             }
-            
             labelEl.innerText = "COMPLETE";
             contentEl.innerText = "すべての学習が終わりました！";
         }
@@ -121,12 +74,10 @@
                 
                 const utter = new SpeechSynthesisUtterance(text);
                 utter.lang = 'ja-JP';
-                utter.rate = 1.0; // 読み上げ速度
-
-                utter.onend = () => {
-                    // 読み上げが終わってから指定秒数待つ
-                    setTimeout(resolve, delay);
-                };
+                utter.onend = () => setTimeout(resolve, delay);
+                
+                // 読み上げエラー対策
+                utter.onerror = () => resolve();
                 
                 synth.speak(utter);
             });
