@@ -2,27 +2,46 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AWS SAA 音声単語帳</title>
     <style>
         body { font-family: sans-serif; text-align: center; padding-top: 50px; background-color: #f4f7f9; }
-        #card { background: white; width: 80%; max-width: 500px; margin: 0 auto; padding: 40px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); min-height: 200px; display: flex; flex-direction: column; justify-content: center; }
-        #word { font-size: 2.5rem; font-weight: bold; margin-bottom: 20px; }
-        #meaning { font-size: 1.2rem; color: #555; display: none; margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee; }
-        #status { margin-top: 30px; color: #ff9900; font-weight: bold; }
+        #card { background: white; width: 80%; max-width: 500px; margin: 0 auto; padding: 40px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); min-height: 250px; display: flex; flex-direction: column; justify-content: center; }
+        h1 { color: #232f3e; font-size: 1.5rem; }
+        #word { font-size: 2.2rem; font-weight: bold; margin-bottom: 20px; color: #1a73e8; }
+        #meaning { font-size: 1.2rem; color: #555; display: none; margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee; line-height: 1.6; }
+        #status { margin-top: 30px; color: #ff9900; font-weight: bold; min-height: 1.5rem; }
+        .hint { color: #888; font-size: 0.85rem; margin-top: 40px; background: #eee; padding: 10px; border-radius: 5px; display: inline-block; }
     </style>
 </head>
 <body>
 
-    <h1>神田ジジの単語帳だよ～～～777</h1>
+    <h1>神田ジジの単語帳だよ～～～555</h1>
+
     <div id="card">
         <div id="word">読み込み中...</div>
         <div id="meaning"></div>
     </div>
+
     <div id="status">音声認識 準備中...</div>
 
-    <script src="./dict.js"></script>
+    <div class="hint">
+        🎤 <b>操作コマンド</b><br>
+        「タイム」：5秒停止 / 「回答」：答えを表示<br>
+        「おぼえた」：次へ / 「まだ」：もう一度
+    </div>
 
     <script>
+        // --- 【重要】ここに単語データを直接入れます（dict.jsは不要になります） ---
+        const wordList = [
+            { word: "S3", meaning: "Simple Storage Service。安価で耐久性の高いオブジェクトストレージ。" },
+            { word: "CloudFront", meaning: "CDNサービス。エッジロケーションを使用して低遅延で配信する。" },
+            { word: "OAC", meaning: "Origin Access Control。S3バケットへの直接アクセスを制限する新しい認証方式。" },
+            { word: "Route 53", meaning: "可用性と拡張性に優れたドメインネームシステム (DNS) ウェブサービス。" },
+            { word: "IAM", meaning: "AWSリソースへのアクセスを安全に管理するためのサービス。" }
+            // 必要な分だけここに { word: "...", meaning: "..." }, の形で追加してください
+        ];
+
         let currentIndex = 0;
         let waitTimer = null;
         let isPaused = false;
@@ -37,25 +56,12 @@
             window.speechSynthesis.speak(uttr);
         }
 
-        function showAnswer() {
-            if (waitTimer) clearTimeout(waitTimer);
-            waitTimer = null;
-            isPaused = false;
-            meaningElement.style.display = 'block';
-            statusElement.innerText = "「おぼえた」または「まだ」と言ってください";
-            if (window.wordList) speak(window.wordList[currentIndex].meaning);
-        }
-
         function nextWord() {
-            if (!window.wordList || window.wordList.length === 0) {
-                wordElement.innerText = "dict.jsが読み込めません";
-                return;
-            }
-            if (currentIndex >= window.wordList.length) currentIndex = 0;
+            if (currentIndex >= wordList.length) currentIndex = 0;
+            const currentData = wordList[currentIndex];
             
-            const data = window.wordList[currentIndex];
-            wordElement.innerText = data.word;
-            meaningElement.innerText = data.meaning;
+            wordElement.innerText = currentData.word;
+            meaningElement.innerText = currentData.meaning;
             meaningElement.style.display = 'none';
             statusElement.innerText = "5秒後に回答を表示します...";
             
@@ -64,25 +70,35 @@
             waitTimer = setTimeout(showAnswer, 5000);
         }
 
-        // 音声認識の設定
+        function showAnswer() {
+            if (waitTimer) clearTimeout(waitTimer);
+            waitTimer = null;
+            isPaused = false;
+            meaningElement.style.display = 'block';
+            statusElement.innerText = "「おぼえた」または「まだ」と言ってください";
+            speak(wordList[currentIndex].meaning);
+        }
+
+        // 音声認識のセットアップ
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!SpeechRecognition) {
-            statusElement.innerText = "音声認識非対応ブラウザです";
+            statusElement.innerText = "音声認識に対応していません。Chromeを使ってください。";
         } else {
             const recognition = new SpeechRecognition();
             recognition.lang = 'ja-JP';
             recognition.continuous = true;
+            recognition.interimResults = false;
 
             recognition.onresult = (event) => {
                 const transcript = event.results[event.results.length - 1][0].transcript;
-                console.log("認識:", transcript);
+                console.log("認識結果:", transcript);
 
                 if (transcript.includes("タイム")) {
                     if (waitTimer) {
                         clearTimeout(waitTimer);
                         waitTimer = null;
                         isPaused = true;
-                        statusElement.innerText = "一時停止中...（『回答』と言ってください）";
+                        statusElement.innerText = "一時停止中...（『回答』で再開）";
                         speak("ちょっと待って");
                     }
                 } else if (transcript.includes("回答")) {
@@ -95,11 +111,14 @@
                 }
             };
 
-            recognition.onend = () => recognition.start();
-            
+            recognition.onend = () => {
+                try { recognition.start(); } catch(e) {}
+            };
+
             window.onload = () => {
                 nextWord();
                 recognition.start();
+                statusElement.innerText = "音声認識 開始！";
             };
         }
     </script>
