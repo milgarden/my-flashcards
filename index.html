@@ -2,34 +2,23 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AWS SAA 音声単語帳</title>
     <style>
         body { font-family: sans-serif; text-align: center; padding-top: 50px; background-color: #f4f7f9; }
         #card { background: white; width: 80%; max-width: 500px; margin: 0 auto; padding: 40px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); min-height: 200px; display: flex; flex-direction: column; justify-content: center; }
-        h1 { color: #232f3e; }
         #word { font-size: 2.5rem; font-weight: bold; margin-bottom: 20px; }
         #meaning { font-size: 1.2rem; color: #555; display: none; margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee; }
-        #status { margin-top: 30px; color: #ff9900; font-weight: bold; min-height: 1.5rem; }
-        .hint { color: #888; font-size: 0.8rem; margin-top: 50px; }
+        #status { margin-top: 30px; color: #ff9900; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <h1>神田ジジの単語帳だよ～～～</h1>
-    <h2>SAA Flashcards</h2>
-
     <div id="card">
         <div id="word">読み込み中...</div>
         <div id="meaning"></div>
     </div>
-
-    <div id="status">音声認識 待機中...</div>
-
-    <div class="hint">
-        「タイム」：5秒タイマー停止<br>
-        「回答」：答えを表示
-    </div>
+    <div id="status">音声認識 準備中...</div>
 
     <script src="./dict.js"></script>
 
@@ -48,64 +37,56 @@
             window.speechSynthesis.speak(uttr);
         }
 
-        function nextWord() {
-            // dict.jsが読み込まれているか最終チェック
-            if (typeof wordList === 'undefined' || wordList.length === 0) {
-                wordElement.innerText = "dict.jsが読み込めませんでした";
-                return;
-            }
-
-            if (currentIndex >= wordList.length) currentIndex = 0;
-            const currentData = wordList[currentIndex];
-            
-            wordElement.innerText = currentData.word;
-            meaningElement.innerText = currentData.meaning;
-            meaningElement.style.display = 'none';
-            statusElement.innerText = "5秒後に回答を表示します...";
-            
-            isPaused = false;
-            
-            if (waitTimer) clearTimeout(waitTimer);
-            waitTimer = setTimeout(() => {
-                showAnswer();
-            }, 5000);
-        }
-
         function showAnswer() {
             if (waitTimer) clearTimeout(waitTimer);
             waitTimer = null;
             isPaused = false;
             meaningElement.style.display = 'block';
             statusElement.innerText = "「おぼえた」または「まだ」と言ってください";
-            speak(wordList[currentIndex].meaning);
+            if (window.wordList) speak(window.wordList[currentIndex].meaning);
+        }
+
+        function nextWord() {
+            if (!window.wordList || window.wordList.length === 0) {
+                wordElement.innerText = "dict.jsが読み込めません";
+                return;
+            }
+            if (currentIndex >= window.wordList.length) currentIndex = 0;
+            
+            const data = window.wordList[currentIndex];
+            wordElement.innerText = data.word;
+            meaningElement.innerText = data.meaning;
+            meaningElement.style.display = 'none';
+            statusElement.innerText = "5秒後に回答を表示します...";
+            
+            isPaused = false;
+            if (waitTimer) clearTimeout(waitTimer);
+            waitTimer = setTimeout(showAnswer, 5000);
         }
 
         // 音声認識の設定
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!SpeechRecognition) {
-            statusElement.innerText = "このブラウザは音声認識に対応していません";
+            statusElement.innerText = "音声認識非対応ブラウザです";
         } else {
             const recognition = new SpeechRecognition();
             recognition.lang = 'ja-JP';
             recognition.continuous = true;
-            recognition.interimResults = false;
 
             recognition.onresult = (event) => {
                 const transcript = event.results[event.results.length - 1][0].transcript;
-                console.log("認識結果:", transcript);
+                console.log("認識:", transcript);
 
                 if (transcript.includes("タイム")) {
                     if (waitTimer) {
                         clearTimeout(waitTimer);
                         waitTimer = null;
                         isPaused = true;
-                        statusElement.innerText = "一時停止中...（準備ができたら『回答』と言ってください）";
+                        statusElement.innerText = "一時停止中...（『回答』と言ってください）";
                         speak("ちょっと待って");
                     }
                 } else if (transcript.includes("回答")) {
-                    if (isPaused || waitTimer) {
-                        showAnswer();
-                    }
+                    showAnswer();
                 } else if (transcript.includes("おぼえた")) {
                     currentIndex++;
                     nextWord();
@@ -116,17 +97,9 @@
 
             recognition.onend = () => recognition.start();
             
-            // 起動処理
             window.onload = () => {
-                // 少しだけ待ってから変数の存在を確認（読み込みラグ対策）
-                setTimeout(() => {
-                    if (typeof wordList !== 'undefined') {
-                        nextWord();
-                        recognition.start();
-                    } else {
-                        wordElement.innerText = "dict.jsが見つかりません";
-                    }
-                }, 500);
+                nextWord();
+                recognition.start();
             };
         }
     </script>
