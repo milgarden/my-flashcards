@@ -11,6 +11,6 @@ FrontText,BackText,Comment,FrontTextLanguage,BackTextLanguage
 予算：カスタム予算を設定して、コストまたは使用量が予算額や予算量を超えた場合に細かくアラームを設定することができるサービスは何？,AWS Budgets,コスト最適化,ja-JP,ja-JP
 伸縮性：EC2および RDSインスタンスの開始スケジュールと停止スケジュールを設定して、AWS リソースコストを管理するAWS ソリューションは何？,AWS Instance Scheduler,コスト最適化,ja-JP,ja-JP
 リザーブ購入は「たまに動く」サービスではなく、「ずっと動いている（＝予約した方が安くなる）」という利用シーンが非常に多いため、リザーブド設定が用意されています。ＥＣ２と他は何のサービスがリザーブ設定されていますか？,ＤＢ（RDS、ElastiCache 、Redshift、DynamoDB）,コスト最適化,ja-JP,ja-JP
-Compute Savings Plans が適用できるサービス3種類は？,"EC2: すべてのインスタンスファミリー（C, M, R, Tなど）が対象です。
+Compute Savings Plans が適用できるサービス3種類は？,"EC2: すべてのインスタンスファミリー（C、 M、 R、 Tなど）が対象です。
 Fargate: サーバーレスコンテナの実行料金に適用されます。
 Lambda: 関数の実行時間（Duration）とリクエスト料金に適用されます。",コスト最適化,ja-JP,ja-JP
