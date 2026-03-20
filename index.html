@@ -16,8 +16,8 @@
 </head>
 <body>
 
-    <h1>神田ジィジの単語帳だよ～～～</h1>
-    <h1>SAA Flashcards</h1>
+    <h1>神田ジジの単語帳だよ～～～</h1>
+    <h2>SAA Flashcards</h2>
 
     <div id="card">
         <div id="word">読み込み中...</div>
@@ -31,7 +31,7 @@
         「回答」：答えを表示
     </div>
 
-    <script src="dict.js"></script>
+    <script src="./dict.js"></script>
 
     <script>
         let currentIndex = 0;
@@ -42,15 +42,19 @@
         const meaningElement = document.getElementById('meaning');
         const statusElement = document.getElementById('status');
 
-        // 音声合成（読み上げ）
         function speak(text) {
             const uttr = new SpeechSynthesisUtterance(text);
             uttr.lang = 'ja-JP';
             window.speechSynthesis.speak(uttr);
         }
 
-        // 次の単語を表示
         function nextWord() {
+            // dict.jsが読み込まれているか最終チェック
+            if (typeof wordList === 'undefined' || wordList.length === 0) {
+                wordElement.innerText = "dict.jsが読み込めませんでした";
+                return;
+            }
+
             if (currentIndex >= wordList.length) currentIndex = 0;
             const currentData = wordList[currentIndex];
             
@@ -61,14 +65,12 @@
             
             isPaused = false;
             
-            // 5秒タイマー開始
             if (waitTimer) clearTimeout(waitTimer);
             waitTimer = setTimeout(() => {
                 showAnswer();
             }, 5000);
         }
 
-        // 回答を表示
         function showAnswer() {
             if (waitTimer) clearTimeout(waitTimer);
             waitTimer = null;
@@ -79,54 +81,54 @@
         }
 
         // 音声認識の設定
-        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        recognition.lang = 'ja-JP';
-        recognition.continuous = true;
-        recognition.interimResults = false;
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+            statusElement.innerText = "このブラウザは音声認識に対応していません";
+        } else {
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'ja-JP';
+            recognition.continuous = true;
+            recognition.interimResults = false;
 
-        recognition.onresult = (event) => {
-            const transcript = event.results[event.results.length - 1][0].transcript;
-            console.log("認識:", transcript);
+            recognition.onresult = (event) => {
+                const transcript = event.results[event.results.length - 1][0].transcript;
+                console.log("認識結果:", transcript);
 
-            // 「タイム」で一時停止
-            if (transcript.includes("タイム")) {
-                if (waitTimer) {
-                    clearTimeout(waitTimer);
-                    waitTimer = null;
-                    isPaused = true;
-                    statusElement.innerText = "一時停止中...（回答待ち）";
-                    speak("ちょっと待って。準備ができたら回答と言ってください");
+                if (transcript.includes("タイム")) {
+                    if (waitTimer) {
+                        clearTimeout(waitTimer);
+                        waitTimer = null;
+                        isPaused = true;
+                        statusElement.innerText = "一時停止中...（準備ができたら『回答』と言ってください）";
+                        speak("ちょっと待って");
+                    }
+                } else if (transcript.includes("回答")) {
+                    if (isPaused || waitTimer) {
+                        showAnswer();
+                    }
+                } else if (transcript.includes("おぼえた")) {
+                    currentIndex++;
+                    nextWord();
+                } else if (transcript.includes("まだ")) {
+                    nextWord();
                 }
-            }
+            };
 
-            // 「回答」で再開
-            else if (transcript.includes("回答")) {
-                if (isPaused || waitTimer) {
-                    showAnswer();
-                }
-            }
-
-            // 判定
-            else if (transcript.includes("おぼえた")) {
-                currentIndex++;
-                nextWord();
-            } 
-            else if (transcript.includes("まだ")) {
-                nextWord(); // 同じ単語をリトライ（または順序調整）
-            }
-        };
-
-        recognition.onend = () => recognition.start(); // 常に起動
-
-        // 起動
-        window.onload = () => {
-            if (typeof wordList !== 'undefined' && wordList.length > 0) {
-                nextWord();
-                recognition.start();
-            } else {
-                wordElement.innerText = "dict.jsが見つかりません";
-            }
-        };
+            recognition.onend = () => recognition.start();
+            
+            // 起動処理
+            window.onload = () => {
+                // 少しだけ待ってから変数の存在を確認（読み込みラグ対策）
+                setTimeout(() => {
+                    if (typeof wordList !== 'undefined') {
+                        nextWord();
+                        recognition.start();
+                    } else {
+                        wordElement.innerText = "dict.jsが見つかりません";
+                    }
+                }, 500);
+            };
+        }
     </script>
 </body>
 </html>
