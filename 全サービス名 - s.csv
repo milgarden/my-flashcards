@@ -1,0 +1,154 @@
+FrontText,BackText,Comment,FrontTextLanguage,BackTextLanguage
+分析のカテゴリー行くよ！,がんばれ！,Japanese,ja-JP,ja-JP
+【頻出】S3上のデータに対して標準SQLを使用して直接分析を実行。サーバーレス。 Key=S3への直接クエリ、 サーバーレス、 標準SQL,Amazon Athena,Japanese,ja-JP,ja-JP
+サードパーティのデータをAWS上で簡単に見つけ、購入し、使用できる。 Key=サードパーティデータ、 データセットのサブスクリプション,AWS Data Exchange,Japanese,ja-JP,ja-JP
+異なるAWSサービス間やオンプレミス間で、指定した間隔でデータの移動や変換を自動化。 Key=スケジュール実行、 データ移動の自動化、 ETL,AWS Data Pipeline,Japanese,ja-JP,ja-JP
+【頻出】Apache SparkやHadoopなどのフレームワークを使用して、大量のデータを処理するビッグデータプラットフォーム。 Key=Hadoop/Spark、 ビッグデータ、 大規模な分散処理,Amazon EMR,Japanese,ja-JP,ja-JP
+フルマネージドなデータ抽出・変換・ロード（ETL）サービス。データカタログを作成し、データの分類や整理を行う。 Key=ETL、 データカタログ、 サーバーレス,AWS Glue,Japanese,ja-JP,ja-JP
+リアルタイムでのストリーミングデータの収集、処理、分析。 Key=ストリーミング、 リアルタイム、 低レイテンシー,Amazon Kinesis,Japanese,ja-JP,ja-JP
+数日で安全なデータレイクをセットアップ。データの収集、クレンジング、カタログ化、およびアクセス制御を統合。 Key=データレイクの構築・管理、 セキュリティの一元化,AWS Lake Formation,Japanese,ja-JP,ja-JP
+Apache Kafkaを使用したストリーミングデータの処理を、インフラ管理なしで実行。 Key=フルマネージドKafka、 オープンソース互換,Amazon Managed Streaming for Apache Kafka (Amazon MSK),Japanese,ja-JP,ja-JP
+ログ分析、リアルタイムのアプリケーションモニタリング、全文検索を実行。 Key=ログ分析、 全文検索、 ダッシュボード,Amazon OpenSearch Service,Japanese,ja-JP,ja-JP
+高速でクラウドネイティブなビジネスインテリジェンス（BI）サービス。データの可視化とダッシュボード作成。 Key=可視化、 BIツール、 SPICEエンジン,Amazon QuickSight,Japanese,ja-JP,ja-JP
+【頻出】高速でフルマネージドなデータウェアハウス（DWH）。複雑なクエリや大規模なデータセットに対する分析。 Key=DWH、 列指向ストレージ、 OLAP,Amazon Redshift,Japanese,ja-JP,ja-JP
+コンピューティングのカテゴリー行くよ！,がんばれ！,Japanese,ja-JP,ja-JP
+【頻出】数十万件のバッチ計算ジョブを効率的に実行するためのフルマネージド型サービス。コンピューティングリソースを動的にプロビジョニングし、ジョブの優先順位付けを行う。 Key=バッチ処理、ハイパフォーマンスコンピューティング(HPC)、ジョブキュー,AWS Batch,Japanese,ja-JP,ja-JP
+【頻出】安全でサイズ変更可能なコンピューティングキャパシティをクラウド内で提供する仮想サーバー。インスタンスタイプを選択し、必要に応じてスケーリングが可能。 Key=仮想サーバー、AMI、インスタンスタイプ、従量課金、共有責任モデル,Amazon EC2,Japanese,ja-JP,ja-JP
+【頻出】アプリケーションの負荷を処理するために、EC2 インスタンスを自動的に起動または終了する機能。可用性の向上とコスト効率の最適化を実現する。 Key=スケーリングポリシー、希望する容量、最小/最大サイズ、高可用性,Amazon EC2 Auto Scaling,Japanese,ja-JP,ja-JP
+【頻出】Java、.NET、PHP、Node.js、Pythonなどのアプリケーションを素早くデプロイ・管理できるサービス。容量のプロビジョニング、負荷分散、自動スケーリングを自動で行う。 Key=PaaS、迅速なデプロイ、開発者フォーカス、マネージドサービス,AWS Elastic Beanstalk,Japanese,ja-JP,ja-JP
+AWS のインフラストラクチャ、サービス、API、ツールをほぼすべてのデータセンターやオンプレミス環境に拡張するフルマネージドサービス。 Key=ハイブリッドクラウド、低レイテンシー、ローカルデータ処理、データレジデンシー,AWS Outposts,Japanese,ja-JP,ja-JP
+サーバーレスアプリケーションを検索、デプロイ、公開するためのマネージド型リポジトリ。再利用可能なアプリケーションパターンをチームや他ユーザーと共有できる。 Key=サーバーレス、CloudFormation、再利用、デプロイの簡素化,AWS Serverless Application Repository,Japanese,ja-JP,ja-JP
+オンプレミスの VMware 環境を AWS クラウド上に拡張・移行するための共同開発サービス。既存のツールやスキルをそのままクラウドで利用可能。 Key=ハイブリッド、VMware vSphere、シームレスな移行、一元管理,VMware Cloud on AWS,Japanese,ja-JP,ja-JP
+5G ネットワークのエッジに AWS のコンピューティングとストレージを組み込み、モバイルデバイス向けに超低レイテンシーのアプリケーションを実現する。 Key=5G、超低レイテンシー、モバイルエッジコンピューティング(MEC)、エッジロケーション,AWS Wavelength,Japanese,ja-JP,ja-JP
+アプリケーション統合のカテゴリー行くよ！,がんばれ！,Japanese,ja-JP,ja-JP
+SaaSアプリ（Salesforce、 Slack等）とAWSサービス間のデータを、コードを書かずに安全に転送するフルマネージド統合サービス。 Key=SaaS連携、 ノーコード、 セキュアなデータ転送,Amazon AppFlow,Japanese,ja-JP,ja-JP
+サーバーレスでGraphQL APIを構築し、複数のデータソース（DynamoDB、 Lambda等）からのデータを1つのエンドポイントで統合・同期する。 Key=GraphQL、 リアルタイム同期、 オフラインデータアクセス,AWS AppSync,Japanese,ja-JP,ja-JP
+【頻出】アプリケーションの状態変化（イベント）をトリガーに、異なるサービス間を疎結合で連携させるサーバーレスイベントバス。以前はCloudWatch Eventsと呼ばれていた。 Key=イベント駆動、 疎結合、 スケジュール実行、 スキーマレジストリ,Amazon EventBridge (Amazon CloudWatch Events),Japanese,ja-JP,ja-JP
+【頻出】Apache ActiveMQやRabbitMQなどの標準的なメッセージブローカープロトコルを使用する既存のオンプレミスアプリを、クラウドへ簡単に移行するためのマネージド型メッセージサービス。 Key=移行(Migration)、 JMS/AMQPプロトコル、 オープン標準,Amazon MQ,Japanese,ja-JP,ja-JP
+【頻出】A2A（アプリ間）およびA2P（アプリ対個人）のメッセージングを提供する、プッシュ型のパブリッシュ/サブスクライブ（Pub/Sub）サービス。 Key=ファンアウト、 プッシュ通知、 HTTP/SNS/SQS/Lambda/Email,Amazon Simple Notification Service (Amazon SNS),Japanese,ja-JP,ja-JP
+【頻出】マイクロサービスや分散システムを疎結合化するための、フルマネージドなメッセージキューイングサービス（プル型）。メッセージの損失を防ぎ、スケーラビリティを確保する。 Key=疎結合、 ポーリング(Pull)、 標準キュー/FIFOキュー、 可視性タイムアウト,Amazon Simple Queue Service (Amazon SQS),Japanese,ja-JP,ja-JP
+【頻出】複数のAWSサービスをワークフローとして視覚的に構築・実行するサーバーレスオーケストレーター。複雑なビジネスロジックやリトライ処理を管理する。 Key=ステートマシン、 長時間のワークフロー、 オーケストレーション、 視覚的デバッグ,AWS Step Functions,Japanese,ja-JP,ja-JP
+コンテナのカテゴリー行くよ！,がんばれ！,Japanese,ja-JP,ja-JP
+【頻出】Dockerコンテナイメージの保存、管理、デプロイを行うフルマネージドなレジストリ。イメージのスキャン機能やS3への保存による高い耐久性が特徴。 Key=コンテナイメージ、レジストリ、脆弱性スキャン、IAMによるイメージ取得権限,Amazon Elastic Container Registry(Amazon ECR),Japanese,ja-JP,ja-JP
+【頻出】AWSでDockerコンテナを簡単に実行、停止、管理できる高度にスケーラブルな管理サービス。Fargate（サーバーレス）またはEC2で動作。 Key=オーケストレーション、タスク定義、Fargate、サービス、クラスター,Amazon Elastic Container Service(Amazon ECS),Japanese,ja-JP,ja-JP
+独自のオンプレミスインフラストラクチャ上でECSタスクを実行・管理できる機能。ハイブリッド環境での一貫した操作が可能。 Key=オンプレミス、ハイブリッド、一貫した管理、外部インスタンス,Amazon ECS Anywhere,Japanese,ja-JP,ja-JP
+【頻出】オープンソースのKubernetesをAWS上で簡単に実行できるマネージドサービス。コントロールプレーンの管理をAWSが担当。 Key=Kubernetes、ポッド(Pod)、kubectl、オープンソース互換,Amazon Elastic Kubernetes Service (Amazon EKS),Japanese,ja-JP,ja-JP
+独自のデータセンターやオンプレミス環境でEKSクラスターを運用できる機能。AWSマネジメントコンソールから一元管理が可能。 Key=ハイブリッドクラウド、オンプレミス、一元管理、運用の一貫性,Amazon EKS Anywhere,Japanese,ja-JP,ja-JP
+AWSがEKSで使用しているものと同じKubernetesディストリビューション。ユーザーが独自の環境で安定したK8s環境を構築・パッチ適用する際に利用。 Key=再現性、オープンソース、パッチ適用、セルフマネージド,Amazon EKS Distro,Japanese,ja-JP,ja-JP
+AWS コスト管理のカテゴリー行くよ！,がんばれ！,Japanese,ja-JP,ja-JP
+【頻出】予算を超過しそうな場合や実際に超過した際にアラートを送信。コストや使用量のしきい値を監視する。 Key=予算アラート、SNS通知、コスト制御,AWS Budgets,Japanese,ja-JP,ja-JP
+【頻出】最も詳細なコストと使用量のデータを含むレポートをS3に配信。AthenaやQuickSightと連携して分析可能。 Key=詳細レポート、S3、Athena連携,AWS Cost and Usage Report,Japanese,ja-JP,ja-JP
+【頻出】過去のコスト推移を可視化し、将来のコストを予測。コスト削減の推奨事項も提示する。 Key=可視化、トレンド分析、コスト予測,AWS Cost Explorer,Japanese,ja-JP,ja-JP
+【頻出】1年または3年の期間、一定の使用量をコミットすることでEC2、Lambda、Fargateなどの料金が割引になる。 Key=使用量コミット、柔軟な割引、コスト削減,Savings Plans,Japanese,ja-JP,ja-JP
+データベースのカテゴリー行くよ！,がんばれ！,Japanese,ja-JP,ja-JP
+【頻出】MySQL/PostgreSQL互換、標準の5倍の性能、6つのデータコピー、ストレージ自動拡張。 Key=高性能、高可用性、商用DBからの移行,Amazon Aurora,Japanese,ja-JP,ja-JP
+【頻出】変動の激しいトラフィックに対応、容量の自動スケーリング、アイドル時のコスト削減。 Key=予測不能なワークロード、コスト最適化,Amazon Aurora Serverless,Japanese,ja-JP,ja-JP
+MongoDB互換のドキュメントDB、フルマネージド、JSONデータの保存。 Key=MongoDB互換、コンテンツ管理,Amazon DocumentDB,Japanese,ja-JP,ja-JP
+【頻出】フルマネージドNoSQL、ミリ秒単位の応答、低レイテンシー、キーバリューストア。 Key=スケーラビリティ、セッション管理、ゲーム/IoT,Amazon DynamoDB,Japanese,ja-JP,ja-JP
+【頻出】インメモリデータストア、RedisまたはMemcached、DBの負荷軽減。 Key=読み取りヘビー、低レイテンシー、キャッシング,Amazon ElastiCache,Japanese,ja-JP,ja-JP
+Apache Cassandra互換、サーバーレス、オープンソースからの移行。 Key=Cassandra互換、広帯域・高スループット,Amazon Keyspaces,Japanese,ja-JP,ja-JP
+グラフデータベース、データ間の複雑な関係性をクエリ。 Key=ナレッジグラフ、不正検出、SNSのつながり,Amazon Neptune,Japanese,ja-JP,ja-JP
+台帳データベース、変更不可能な履歴、暗号化された整合性証明。 Key=不変性、中央信頼機関、履歴監査,Amazon Quantum Ledger Database (Amazon QLDB),Japanese,ja-JP,ja-JP
+【頻出】マネージド型リレーショナルDB、パッチ適用/バックアップ自動化、マルチAZ。 Key=既存SQLの移行、OLTP、高可用性（Multi-AZ）,Amazon RDS,Japanese,ja-JP,ja-JP
+【頻出】データウェアハウス、ペタバイト級の分析、列指向ストレージ（カラムナー）。 Key=BIツール、OLAP、大規模データ分析,Amazon Redshift,Japanese,ja-JP,ja-JP
+時系列データベース、数兆件のイベント保存、時間経過によるデータ減衰管理。 Key=IoTセンサー、アプリケーションのログ、監視データ,Amazon Timestream,Japanese,ja-JP,ja-JP
+マネジメントとガバナンスのカテゴリー行くよ！,がんばれ！,Japanese,ja-JP,ja-JP
+【頻出】需要に合わせてEC2などのリソース数を自動増減。可用性の維持とコスト最適化が目的。 Key=スケーラビリティ、動的スケーリング、最小/最大容量,AWS Auto Scaling,Japanese,ja-JP,ja-JP
+【頻出】IaC (Infrastructure as Code)。テンプレート（JSON/YAML）を用いてAWSリソースを自動プロビジョニング。 Key=テンプレート、スタック、自動化、再現性,AWS CloudFormation,Japanese,ja-JP,ja-JP
+【頻出】ユーザーの操作ログ、APIコールの記録。コンプライアンス監査や不正アクセスの調査に使用。 Key=ガバナンス、監査、APIログ、S3に保存,AWS CloudTrail,Japanese,ja-JP,ja-JP
+【頻出】リソースのモニタリングとアラート。CPU使用率などのメトリクス監視やログ収集を行う。 Key=モニタリング、アラーム、ダッシュボード、標準メトリクス,Amazon CloudWatch,Japanese,ja-JP,ja-JP
+【頻出】コマンドラインからAWSリソースを操作・管理するツール。スクリプトによる自動化に最適。 Key=CLI、プログラムによる操作、AWSアクセスキー,AWS Command Line Interface (AWS CLI),Japanese,ja-JP,ja-JP
+機械学習を用いて、過去の利用状況から最適なインスタンスタイプやサイズを推奨する。 Key=コスト削減、過剰プロビジョニングの防止、推奨事項,AWS Compute Optimizer,Japanese,ja-JP,ja-JP
+【頻出】AWSリソースの構成履歴の記録と変更の評価。設定がルールに準拠しているかを判定。 Key=構成監査、リソース履歴、コンプライアンス評価,AWS Config,Japanese,ja-JP,ja-JP
+規約に準拠したマルチアカウント環境（ランディングゾーン）のセットアップと管理を簡素化。 Key=ランディングゾーン、ガードレール、ガバナンスの自動化,AWS Control Tower,Japanese,ja-JP,ja-JP
+ソフトウェアライセンス（MicrosoftやSAP等）の使用状況を管理・追跡し、違反を防止する。 Key=ライセンス遵守、BYOL、コスト管理,AWS License Manager,Japanese,ja-JP,ja-JP
+オープンソースのGrafanaをベースとした、フルマネージドな視覚化・分析サービス。 Key=ダッシュボード、可視化、マルチデータソース,Amazon Managed Grafana,Japanese,ja-JP,ja-JP
+コンテナ環境などの時系列メトリクスを監視・アラートするためのフルマネージド型Prometheus。 Key=コンテナ監視、時系列データ、スケーラブルな監視,Amazon Managed Service for Prometheus,Japanese,ja-JP,ja-JP
+【頻出】ブラウザからAWSリソースを視覚的に操作・管理するためのWebベースのインターフェース。 Key=GUI、Webコンソール、視覚的操作,AWS Management Console,Japanese,ja-JP,ja-JP
+【頻出】複数のAWSアカウントを一元管理。一括請求（コンソリデーティッドビリング）や制御ポリシーを適用。 Key=一括請求、SCP (サービスコントロールポリシー)、マルチアカウント,AWS Organizations,Japanese,ja-JP,ja-JP
+AWS側の障害や予定されたメンテナンス情報など、自身の環境に影響するイベントを通知。 Key=AWS側のイベント、パーソナライズされた通知、Service Health,AWS Personal Health Dashboard,Japanese,ja-JP,ja-JP
+マイクロサービスやサーバーレスアプリケーションのデプロイ、管理、モニタリングを自動化。 Key=プラットフォームエンジニアリング、テンプレート管理、標準化,AWS Proton,Japanese,ja-JP,ja-JP
+承認済みのAWSリソース（製品）をカタログ化し、ユーザーがセルフサービスで利用可能にする。 Key=ポートフォリオ、セルフサービス、標準化された構成,AWS Service Catalog,Japanese,ja-JP,ja-JP
+【頻出】AWSリソース（特にEC2やオンプレミスサーバー）のパッチ適用や設定管理を一元化。 Key=ハイブリッド管理、パッチマネージャー、ランコマンド,AWS Systems Manager,Japanese,ja-JP,ja-JP
+【頻出】AWSのベストプラクティスに基づき、コスト、セキュリティ、パフォーマンスなどを自動チェック。 Key=5つの柱（旧）、コスト最適化の助言、セキュリティ診断,AWS Trusted Advisor,Japanese,ja-JP,ja-JP
+AWSの設計思想（6つの柱）に照らして、現在のアーキテクチャをレビューし改善案を提示。 Key=ベストプラクティス、6つの柱、設計レビュー、リスク特定,AWS Well-Architected Tool,Japanese,ja-JP,ja-JP
+フロントエンドのウェブとモバイルのカテゴリー行くよ！,がんばれ！,Japanese,ja-JP,ja-JP
+モバイル・ウェブアプリの迅速な開発・デプロイ・ホスティングを統合。Key=フルスタック、 継続的デプロイ、 CI/CD、 サーバーレス,AWS Amplify,Japanese,ja-JP,ja-JP
+【頻出】APIの作成・公開・維持・管理・保護。Key=RESTful API、 WebSocket、 スロットリング、 Lambda統合、 認証・認可,Amazon API Gateway,Japanese,ja-JP,ja-JP
+クラウド上の実機デバイスを使用したアプリテスト。Key=モバイルアプリテスト、 ブラウザテスト、 実機検証,AWS Device Farm,Japanese,ja-JP,ja-JP
+複数のチャネル（メール、SMS、プッシュ通知）を通じた顧客エンゲージメント。Key=マーケティングコミュニケーション、 ユーザー分析、 セグメント配信,Amazon Pinpoint,Japanese,ja-JP,ja-JP
+デベロッパーツールのカテゴリー行くよ！,がんばれ！,Japanese,ja-JP,ja-JP
+フルマネージド型のソース管理サービス。Gitリポジトリをホストし、コードの機密性と可用性を確保する。 Key=Gitリポジトリ、 安全なコード保管、 既存Gitツールとの互換性,AWS CodeCommit,Japanese,ja-JP,ja-JP
+ソースコードをコンパイルし、テストを実行して、デプロイ可能なソフトウェアパッケージを作成するフルマネージド型のビルドサービス。 Key=継続的統合(CI)、 スケーラブルなビルド環境、 アーティファクト作成,AWS CodeBuild,Japanese,ja-JP,ja-JP
+EC2、Lambda、オンプレミスサーバーなどへのコード配布を自動化するサービス。 Key=自動デプロイ、 インプレース/ブルーグリーンデプロイ、 ローリングアップデート,AWS CodeDeploy,Japanese,ja-JP,ja-JP
+リリースパイプラインをモデル化および視覚化し、コードの変更が発生するたびにビルド、テスト、デプロイを自動化する継続的デリバリーサービス。 Key=継続的デリバリー(CD)、 ワークフローの可視化、 全プロセス自動化,AWS CodePipeline,Japanese,ja-JP,ja-JP
+AWSでのアプリケーション開発を迅速に行うための統合UI。プロジェクトの構築、管理、デプロイを一元化する。 Key=開発テンプレート、 ダッシュボード、 迅速なプロジェクト開始,AWS CodeStar,Japanese,ja-JP,ja-JP
+ブラウザのみでコードの記述、実行、デバッグができるクラウドベースの統合開発環境 (IDE)。 Key=ブラウザベースIDE、 リアルタイム共同編集、 サーバーレスアプリ開発,AWS Cloud9,Japanese,ja-JP,ja-JP
+【頻出】分散アプリケーションの分析とデバッグを支援するサービス。リクエストの追跡を行い、パフォーマンスのボトルネックを特定する。 Key=分散トレース、 パフォーマンス分析、 サービスマップ,AWS X-Ray,Japanese,ja-JP,ja-JP
+メディアサービスのカテゴリー行くよ！,がんばれ！,Japanese,ja-JP,ja-JP
+メディアファイルをさまざまなデバイス（スマホ、タブレット、PCなど）で再生可能な形式に変換するマネージド型メディア変換サービス。 Key=メディア変換、HLS、S3連携、レガシー,Amazon Elastic Transcoder:（現在はAWS Elemental MediaConvertが推奨されることが多い）,Japanese,ja-JP,ja-JP
+数百万台のデバイスからカメラ映像などのビデオストリームを安全にキャプチャ、処理、保存するサービス。 Key=リアルタイムビデオ、再生、分析、機械学習連携、WebRTC,Amazon Kinesis Video Streams,Japanese,ja-JP,ja-JP
+機械学習のカテゴリー行くよ！,がんばれ！,Japanese,ja-JP,ja-JP
+自然言語処理(NLP)を使用してテキストからインサイトや関係性を抽出する。Key=非構造化データ、エンティティ抽出、感情分析,Amazon Comprehend,Japanese,ja-JP,ja-JP
+時系列データを使用して正確な需要予測を行う。Key=機械学習による予測、時系列分析、在庫最適化,Amazon Forecast,Japanese,ja-JP,ja-JP
+オンライン決済やアカウント作成時の不正行為を自動的に検出する。Key=不正検出、マネーロンダリング防止、機械学習モデル,Amazon Fraud Detector,Japanese,ja-JP,ja-JP
+機械学習を使用した高精度なエンタープライズ検索サービス。Key=インテリジェント検索、自然言語クエリ、ドキュメント検索,Amazon Kendra,Japanese,ja-JP,ja-JP
+音声やテキストを使用した対話型インターフェース（チャットボット）を構築する。Key=ボット、対話型AI、ASR/NLU,Amazon Lex,Japanese,ja-JP,ja-JP
+テキストをリアルな音声に変換する。Key=テキスト読み上げ、音声合成、多言語、視覚障害者支援,Amazon Polly,Japanese,ja-JP,ja-JP
+画像やビデオの分析を行い、物体、人、テキスト、シーンなどを検出する。Key=顔認識、画像分析、ビデオ分析、コンテンツモデレーション,Amazon Rekognition,Japanese,ja-JP,ja-JP
+機械学習モデルの構築、トレーニング、デプロイを迅速に行うフルマネージドサービス。Key=MLライフサイクル、モデル訓練、推論エンドポイント,Amazon SageMaker,Japanese,ja-JP,ja-JP
+スキャンされたドキュメントからテキスト、手書き文字、データを自動的に抽出する。Key=OCR、フォーム抽出、テーブル解析、ドキュメント処理,Amazon Textract,Japanese,ja-JP,ja-JP
+音声をテキストに変換する（自動音声認識）。Key=音声文字起こし、リアルタイム変換、カスタマーセンター分析,Amazon Transcribe,Japanese,ja-JP,ja-JP
+流暢かつ正確な多言語翻訳を提供する。Key=言語翻訳、ローカライズ、リアルタイム翻訳,Amazon Translate,Japanese,ja-JP,ja-JP
+移行と転送のカテゴリー行くよ！,がんばれ！,Japanese,ja-JP,ja-JP
+既存のオンプレミスサーバーの構成、使用状況、依存関係を自動的に収集・分析する。 Key=サーバー構成の可視化、依存関係の把握、移行計画の策定,AWS Application Discovery Service,Japanese,ja-JP,ja-JP
+物理、仮想、クラウドベースのサーバーをAWSへ迅速に移行（リフト＆シフト）する。 Key=リフト＆シフト、継続的なレプリケーション、移行のダウンタイム最小化,AWS Application Migration Service (MGN),Japanese,ja-JP,ja-JP
+データベースをAWSへ移行する。移行中もソースDBは稼働可能。 Key=異種DB間の移行、継続的データレプリケーション、SCT(Schema Conversion Tool)との併用,AWS Database Migration Service (AWS DMS),Japanese,ja-JP,ja-JP
+オンプレミスストレージとAWS（S3/EFS/FSx）間で大容量データを高速転送する。 Key=NFS/SMB、データの同期、高速転送、スケジューリング,AWS DataSync,Japanese,ja-JP,ja-JP
+複数の移行ツールの進捗を一つのダッシュボードで一元管理・追跡する。 Key=移行ステータスの可視化、複数ツールの統合管理,AWS Migration Hub,Japanese,ja-JP,ja-JP
+※現在はApplication Migration Service (MGN)への移行が推奨されている古いツール。 Key=エージェントレス、増分レプリケーション（現在はMGNを優先選択）,AWS Server Migration Service (AWS SMS),Japanese,ja-JP,ja-JP
+【頻出】インターネットを介さず、物理デバイスを使用してペタバイト級のデータをAWSへ移動する。 Key=オフライン移行、大容量、エッジコンピューティング（Snowcone/Snowball/Snowmobile）,AWS Snow Family,Japanese,ja-JP,ja-JP
+S3やEFSに対して、標準的なプロトコルでファイルを直接転送できるようにする。 Key=SFTP/FTPS/FTP、既存ワークフローの維持、フルマネージド,AWS Transfer Family,Japanese,ja-JP,ja-JP
+セキュリティ、アイデンティティ、コ ンプライアンスのカテゴリー行くよ！,がんばれ！,Japanese,ja-JP,ja-JP
+AWSのコンプライアンス報告書（SOCやISO）のダウンロード、契約締結を行う。 Key=コンプライアンスレポート、コンプライアンスの証明,AWS Artifact,Japanese,ja-JP,ja-JP
+AWS環境の監査を自動化し、コントロール（管理策）への準拠を継続的にチェックする。 Key=監査の自動化、証拠収集、コンプライアンスチェック,AWS Audit Manager,Japanese,ja-JP,ja-JP
+【頻出】SSL/TLS証明書の発行・管理・更新を無料で行う。ALBやCloudFrontに適用。 Key=SSL/TLS、HTTPS化、証明書の自動更新,AWS Certificate Manager (ACM),Japanese,ja-JP,ja-JP
+【頻出】FIPS 140-2 Level 3準拠の専用ハードウェア（HSM）を使用して暗号鍵を管理する。 Key=専用ハードウェア、コンプライアンス要件（厳格な鍵管理）,AWS CloudHSM,Japanese,ja-JP,ja-JP
+【頻出】ウェブやモバイルアプリに認証・認可機能を追加する。ソーシャルログインにも対応。 Key=ユーザープール、IDプール、外部IDプロバイダー連携,Amazon Cognito,Japanese,ja-JP,ja-JP
+セキュリティ上の懸念や異常なアクティビティの根本原因を調査・分析する。 Key=セキュリティ調査、グラフ理論ベースの分析、根本原因,Amazon Detective,Japanese,ja-JP,ja-JP
+AWS上でActive Directory（AD）を利用、またはオンプレミスのADと連携する。 Key=Managed Microsoft AD、オンプレAD連携、ドメイン参加,AWS Directory Service,Japanese,ja-JP,ja-JP
+組織内の複数アカウントにまたがるWAFやShieldなどのセキュリティルールを一括管理。 Key=AWS Organizations連携、一括管理、ファイアウォールルール,AWS Firewall Manager,Japanese,ja-JP,ja-JP
+【頻出】ログ（VPC、 CloudTrail、 DNS）を機械学習で分析し、脅威を検知する。 Key=脅威検知、インテリジェント、継続的なモニタリング,Amazon GuardDuty,Japanese,ja-JP,ja-JP
+【頻出】AWSリソースへのアクセスをユーザー・グループ・ロール単位で制御。 Key=最小権限、IDベース/リソースベースのポリシー、ABAC,AWS Identity and Access Management (IAM),Japanese,ja-JP,ja-JP
+【頻出】EC2インスタンスやECRイメージの脆弱性をスキャンする。 Key=脆弱性診断、ソフトウェアのパッチ未適用、ネットワーク到達性,Amazon Inspector,Japanese,ja-JP,ja-JP
+【頻出】暗号鍵（CMK）の作成と管理を行うマネージドサービス。 Key=エンベロープ暗号化、データの暗号化、鍵のローテーション,AWS Key Management Service (AWS KMS),Japanese,ja-JP,ja-JP
+機械学習を用いてS3内の機密データ（個人情報など）を特定・保護する。 Key=S3、機密データ（PII）の検出、情報漏洩対策,Amazon Macie,Japanese,ja-JP,ja-JP
+VPC全体に高度なネットワーク保護（ステートフルなパケットフィルタリング）を導入。 Key=VPC保護、L3-L7フィルタリング、侵入防止システム(IPS),AWS Network Firewall,Japanese,ja-JP,ja-JP
+AWSアカウント間でリソース（SubnetやTransit Gateway等）を共有する。 Key=アカウント間リソース共有、コスト削減、ネットワーク構成の簡素化,AWS Resource Access Manager (AWS RAM),Japanese,ja-JP,ja-JP
+【頻出】データベースの認証情報やAPIキーを安全に保存し、自動ローテーションする。 Key=パスワードの自動更新、RDS認証情報、プログラムからの取得,AWS Secrets Manager,Japanese,ja-JP,ja-JP
+各セキュリティサービスの検出結果を一元的に表示し、スコア化する。 Key=セキュリティポスチャ管理、統合ダッシュボード、一元管理,AWS Security Hub,Japanese,ja-JP,ja-JP
+【頻出】DDoS攻撃からアプリケーションを保護する。Standard（無料）とAdvanced（有料）。 Key=DDoS保護、Route 53/CloudFront/ALBの保護,AWS Shield,Japanese,ja-JP,ja-JP
+【頻出】複数のAWSアカウントやアプリケーションに一つの認証情報でログイン。 Key=SSO、一括ログイン、現在はAWS IAM Identity Centerに名称変更,AWS Single Sign-On,Japanese,ja-JP,ja-JP
+【頻出】Webアプリケーションへの不正アクセス（SQL注入やXSS）をブロック。 Key=L7(アプリケーション層)、IP制限、Web ACL,AWS WAF,Japanese,ja-JP,ja-JP
+ネットワークとコンテンツ配信のカテゴリー行くよ！,がんばれ！,Japanese,ja-JP,ja-JP
+【頻出】エッジロケーションを使用して、低レイテンシーで動画やデータを配信するCDN。Key=静的・動的コンテンツの高速化、DDoS防御、キャッシュ、TTL,Amazon CloudFront,Japanese,ja-JP,ja-JP
+【頻出】オンプレミスとAWS間を、インターネットを介さない専用線で接続する。Key=安定した帯域幅、セキュリティ向上、コスト削減（大量データ転送）,AWS Direct Connect,Japanese,ja-JP,ja-JP
+【頻出】受信したトラフィックをEC2やコンテナなどの複数のターゲットに分散する。Key=高可用性の確保、ヘルスチェック、ALB/NLB/GWLB,Elastic Load Balancing (ELB),Japanese,ja-JP,ja-JP
+【頻出】AWSのグローバルネットワークを使用して、ユーザーへのパスを最適化する。Key=固定IPアドレス（Anycast IP）、高速フェイルオーバー、非HTTPトラフィック,AWS Global Accelerator,Japanese,ja-JP,ja-JP
+インターネットを通さずに、VPC間やAWSサービスをプライベートに接続する。Key=セキュリティ、インターネットゲートウェイ不要、エンドポイント,AWS PrivateLink,Japanese,ja-JP,ja-JP
+【頻出】高可用性とスケーラビリティを備えたDNSサービス。Key=ドメイン登録、ルーティングポリシー（位置情報・レイテンシー）、ヘルスチェック,Amazon Route 53,Japanese,ja-JP,ja-JP
+【頻出】多数のVPCやオンプレミスネットワークを中央ハブで接続する。Key=ハブアンドスポーク構造、ネットワーク構成の簡素化、大規模接続,AWS Transit Gateway,Japanese,ja-JP,ja-JP
+【頻出】AWSクラウド内に定義する論理的に隔離された仮想ネットワーク。Key=サブネット、ルートテーブル、セキュリティグループ、NACL,Amazon VPC,Japanese,ja-JP,ja-JP
+【頻出】インターネットを介してオンプレミスとVPC間に暗号化されたトンネルを構築する。Key=IPsec、低コストな接続、短期間での構築,AWS VPN,Japanese,ja-JP,ja-JP
+サーバーレスのカテゴリー行くよ！,がんばれ！,Japanese,ja-JP,ja-JP
+マネージド型の GraphQL サービス。複数のデータソース（DynamoDB、Lambda等）からのデータを1つのエンドポイントで統合・同期できる。 Key=GraphQL、 リアルタイム更新、 オフラインデータ同期、 データ結合,AWS AppSync,Japanese,ja-JP,ja-JP
+【頻出】サーバーやクラスターの管理が不要なコンテナ向けサーバーレスコンピューティングエンジン。EC2インスタンスのプロビジョニングや管理なしでコンテナを実行できる。 Key=サーバーレスコンテナ、 インフラ管理不要、 タスク定義、 柔軟なスケーリング,AWS Fargate,Japanese,ja-JP,ja-JP
+【頻出】サーバーのプロビジョニングや管理なしでコードを実行できるイベント駆動型コンピューティングサービス。実行時間に対してのみ課金される。 Key=サーバーレス、 イベント駆動、 実行時間課金(1ms単位)、 最大実行時間15分、 ステートレス,AWS Lambda,Japanese,ja-JP,ja-JP
+ストレージのカテゴリー行くよ！,がんばれ！,Japanese,ja-JP,ja-JP
+AWSサービスのデータを一元管理・自動化するバックアップ。フルマネージドでスケジュール設定や保持ポリシーを管理。 Key=中央集中管理、コンプライアンス、クロスリージョンコピー,AWS Backup,Japanese,ja-JP,ja-JP
+【頻出】EC2インスタンス用のブロックストレージ。特定のAZ内で利用。スナップショットによるバックアップが可能。 Key=ブロックストレージ、低レイテンシー、特定のAZ,Amazon Elastic Block Store (Amazon EBS),Japanese,ja-JP,ja-JP
+【頻出】複数のEC2から同時アクセス可能なネットワークファイルシステム。Linux向け。高いスケーラビリティ。 Key=共有ファイルシステム、NFS、数千台の同時接続,Amazon Elastic File System (Amazon EFS),Japanese,ja-JP,ja-JP
+【頻出】WindowsやLustreなどの既存ファイルシステムをAWSで提供。オンプレミスからの移行やHPC、Windowsネイティブ環境に最適。 Key=Windows (SMB)、高性能(Lustre/NetApp/OpenZFS)、既存プロトコルの維持,Amazon FSx (すべてのタイプに対応),Japanese,ja-JP,ja-JP
+【頻出】業界最高水準の耐久性を持つオブジェクトストレージ。安価で無制限のスケーラビリティ。静的サイトホスティングも可能。 Key=オブジェクトストレージ、耐久性11ナイン、静的コンテンツ、ライフサイクルポリシー,Amazon S3,Japanese,ja-JP,ja-JP
+【頻出】長期保存用のアーカイブストレージ。取り出し時間に数分〜数時間のオプションがある。極めて低コスト。 Key=アーカイブ、長期保管、低コスト、取り出しオプション(Expedited/Standard/Bulk),Amazon S3 Glacier,Japanese,ja-JP,ja-JP
+【頻出】オンプレミス環境からAWSストレージへ接続するためのハイブリッドサービス。ファイル、ボリューム、テープの各インターフェースを提供。 Key=ハイブリッドクラウド、キャッシュ型、保管型、VTL(仮想テープライブラリ),AWS Storage Gateway,Japanese,ja-JP,ja-JP
