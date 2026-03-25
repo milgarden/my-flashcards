@@ -17,4 +17,5 @@ const categoryFiles = [
     { name: "17-運用上の優秀性 - g", file: "17-運用上の優秀性 - g.csv" },
     { name: "18-移行と機械学習 - g", file: "18-移行と機械学習 - g.csv" },
     // ...ここに20個分、{ name: "表示名", file: "実際のファイル名.csv" } を並べてください
+    { name: "全サービス名 - s", file: "全サービス名 - s.csv"  },
 ];
