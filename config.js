@@ -1,6 +1,6 @@
 // config.js
 const categoryFiles = [
-    { name: "01-03new_Architecture_Overview.csv", file: "01-03new_Architecture_Overview.csv },
+    { name: "01-03new_Architecture_Overview.csv", file: "01-03new_Architecture_Overview.csv" },
     { name: "01-03_全体像 - s.csv", file: "01-03_全体像 - s.csv" },
     { name: "04-IAM - g", file: "04-IAM - g.csv" },
     { name: "04new_IAM_SAA_v2.csv", file: "04new_IAM_SAA_v2.csv" },
