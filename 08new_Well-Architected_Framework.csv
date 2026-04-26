@@ -1,0 +1,9 @@
+﻿FrontText,BackText,Comment,FrontTextLanguage,BackTextLanguage
+AWS Well-Architected Frameworkの「6つの柱」のうち、インフラの変更を自動化し、日常的な運用手順をコード化して改善し続けることを重点分野とする柱はどれか？,運用上の優秀性 (Operational Excellence),キーワード：コードによる運用、小さな失敗からの学習、運用の可視化,ja-JP,ja-JP
+データの機密性と完全性の保護、ユーザー権限の管理、およびセキュリティイベントの検知を重点分野とするAWS Well-Architected Frameworkの柱はどれか？,セキュリティ (Security),キーワード：アイデンティティ管理、データ保護、インフラ保護,ja-JP,ja-JP
+障害からの復旧、リソースの動的な獲得による需要への対応、および構成ミスやネットワーク問題などの遮断を軽減することを重点分野とする柱はどれか？,信頼性 (Reliability),キーワード：回復性、可用性、分散設計、自動復旧,ja-JP,ja-JP
+コンピューティング、ストレージ、データベースなどのITリソースを効率的に使用し、技術の進化や需要の変化に合わせて効率を維持することを重点分野とする柱はどれか？,パフォーマンス効率 (Performance Efficiency),キーワード：最新技術の民主化、サーバーレス、数分でのグローバル展開,ja-JP,ja-JP
+不要なコストの排除、適切なサイズのリソース選択、およびマネージドサービスの活用により、ビジネス価値を最小価格で実現することを重点分野とする柱はどれか？,コスト最適化 (Cost Optimization),キーワード：消費モデルの導入、支出の分析、マネージドサービス,ja-JP,ja-JP
+エネルギー効率を向上させ、環境への影響を最小限に抑えるためのリソース利用率の最適化を重点分野とする、2021年に追加された柱はどれか？,持続可能性 (Sustainability),キーワード：環境負荷の低減、共有責任モデル（環境）、利用率の向上,ja-JP,ja-JP
+AWS Well-Architected Frameworkの「6つの柱」を覚えるための語呂合わせ（CORPSS）に含まれる要素をすべて答えよ。,"Cost Optimization, Operational Excellence, Reliability, Performance Efficiency, Security, Sustainability",試験では各柱の定義を混同しないことが重要です,ja-JP,ja-JP
+自社のワークロードをWell-Architectedのベストプラクティスと比較し、リスクを特定・修正するためのツールは何か？,AWS Well-Architected Tool,マネジメントコンソールから無料で利用可能なセルフチェックツールです,ja-JP,ja-JP
