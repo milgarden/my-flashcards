@@ -1,6 +1,5 @@
 ﻿FrontText,BackText,Comment,FrontTextLanguage,BackTextLanguage
-Snowball Edgeの大きく2種類は何？,"Snowball Edge Storage Optimized
-Snowball Edge Compute Optimized",移行,ja-JP,ja-JP
+Snowball Edgeの大きく2種類は何？,Snowball Edge Compute Optimized",移行,ja-JP,ja-JP
 以前の「Snowball Edge Storage Optimized」の標準的な容量は80TBでしたが、現在の最新世代で提供されている容量は何TBか？,210TB,移行,ja-JP,ja-JP
 超大容量データを AWS に移動するために使用できるエクサバイト規模のデータ転送サービス,Snowmobile,移行,ja-JP,ja-JP
 物理ストレージデバイスをオンプレミス環境に配置して、エッジ環境での高速データ処理を実施する、エッジコンピューティングのデバイス,Snowcone,移行,ja-JP,ja-JP
