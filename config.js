@@ -29,7 +29,7 @@ const categoryFiles = [
     { name: "16-コスト最適化 - g", file: "16-コスト最適化 - g.csv" },
     { name: "16new-コスト最適化 - g.csv", file: "16new-コスト最適化 - g.csv" },
     { name: "17-運用上の優秀性 - g", file: "17-運用上の優秀性 - g.csv" },
-    { name: "17new-運用上の優秀性 - g.csv", file: "17new-運用上の優秀性 - g.csv.csv" },
+    { name: "17new-運用上の優秀性 - g.csv", file: "17new-運用上の優秀性 - g.csv" },
     { name: "18-移行と機械学習 - g", file: "18-移行と機械学習 - g.csv" },
     { name: "18new-移行と機械学習 - g.csv", file: "18new-移行と機械学習 - g.csv" },
     // ...ここに20個分、{ name: "表示名", file: "実際のファイル名.csv" } を並べてください
