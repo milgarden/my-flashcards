@@ -3,207 +3,128 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AWS SAA 単語帳 Pro+</title>
-
+<title>AWS SAA 改良版</title>
 <style>
-body {
-    font-family: -apple-system, sans-serif;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    min-height: 100vh; margin: 0;
-    background: #f0f2f5;
-}
-
-#card {
-    background: white;
-    width: 92%; max-width: 500px;
-    min-height: 350px;
-    display: flex; flex-direction: column;
-    justify-content: center; align-items: center;
-    border-radius: 30px;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-    text-align: center; padding: 30px;
-}
-
-.label { color:#007aff; font-weight:bold; margin-bottom:10px;}
-.content { font-size:1.4rem; font-weight:bold; white-space:pre-wrap;}
-
-#controls { margin-top:20px; text-align:center;}
-button { padding:12px 20px; margin:5px; border:none; border-radius:10px; cursor:pointer;}
-
-.correct { background:#34c759; color:white;}
-.wrong { background:#ff3b30; color:white;}
-.prev { background:#aaa; color:white;}
-
-#voice-status { font-size:0.9rem; margin-top:10px;}
+body { font-family: -apple-system, sans-serif; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; margin:0; background:#f0f2f5; }
+#card { background:white; width:92%; max-width:500px; min-height:320px; display:flex; flex-direction:column; justify-content:center; align-items:center; border-radius:20px; padding:20px; text-align:center; cursor:pointer; }
+.label { color:#007aff; font-weight:bold; margin-bottom:10px; }
+.content { font-size:1.3rem; font-weight:bold; }
+#controls { margin-top:20px; display:flex; flex-direction:column; align-items:center; gap:10px; width:100%; }
+button { padding:12px 20px; border:none; border-radius:10px; font-size:1rem; cursor:pointer; }
+.correct { background:#34c759; color:white; }
+.wrong { background:#ff3b30; color:white; }
+.prev { background:#ff9500; color:white; }
+.show { background:#5856d6; color:white; }
 </style>
 </head>
-
 <body>
-
 <div id="card">
-    <div id="label" class="label">READY</div>
-    <div id="content" class="content">カテゴリ選択</div>
-    <div id="voice-status"></div>
+<div id="label" class="label">READY</div>
+<div id="content" class="content">カテゴリを選択</div>
+<div id="voice"></div>
 </div>
-
 <div id="controls">
-    <select id="category"></select><br>
-    <button id="start">開始</button><br>
-
-    <div id="answerBtns" style="display:none;">
-        <button class="wrong" onclick="answer(false)">❌</button>
-        <button class="correct" onclick="answer(true)">⭕</button>
-        <button class="prev" onclick="prevQuestion()">⬅️ 前</button>
-    </div>
-
-    <button onclick="resetCategory()">このカテゴリをリセット</button>
+<select id="category"></select>
+<button id="start">開始</button>
+<button id="show" class="show">答え</button>
+<div id="actions">
+<button class="wrong" onclick="answer(false)">まだ</button>
+<button class="correct" onclick="answer(true)">覚えた</button>
+<button class="prev" onclick="prev()">前</button>
 </div>
-
-<script src="config.js"></script>
+<button onclick="resetCategory()">カテゴリリセット</button>
+</div>
 <script src="dict.js"></script>
-
+<script src="config.js"></script>
 <script>
 const synth = speechSynthesis;
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-const rec = new SpeechRecognition();
+const rec = window.SpeechRecognition||window.webkitSpeechRecognition;
+const recognition = rec? new rec():null;
+if(recognition){ recognition.lang='ja-JP'; }
 
-rec.lang = 'ja-JP';
+let data=[], index=0, currentCategory="";
+const label=document.getElementById('label');
+const content=document.getElementById('content');
+const voice=document.getElementById('voice');
+const select=document.getElementById('category');
 
-let data = [];
-let index = 0;
-let currentCategory = "";
-let isAnswering = false;
-
-// UI
-const label = document.getElementById("label");
-const content = document.getElementById("content");
-const voice = document.getElementById("voice-status");
-const btns = document.getElementById("answerBtns");
-
-// カテゴリ生成
 categoryFiles.forEach(c=>{
-    let opt=document.createElement("option");
-    opt.value=c.file;
-    opt.textContent=c.name;
-    document.getElementById("category").appendChild(opt);
+ let o=document.createElement('option'); o.value=c.file; o.textContent=c.name; select.appendChild(o);
 });
 
-// CSV
-function parseCSV(t){
-    return t.split("\n").map(r=>r.split(","));
-}
-
-// 開始
-document.getElementById("start").onclick = async ()=>{
-    currentCategory = document.getElementById("category").value;
-    let res = await fetch(currentCategory);
-    let text = await res.text();
-
-    let rows = parseCSV(text).slice(1);
-
-    let learned = JSON.parse(localStorage.getItem("learned_"+currentCategory)||"[]");
-    data = rows.filter(r=>!learned.includes(r[1]));
-
-    index = Number(localStorage.getItem("index_"+currentCategory)||0);
-
-    next();
+select.onchange=async()=>{
+ currentCategory=select.value;
+ const res=await fetch(currentCategory);
+ const txt=await res.text();
+ data=parseCSV(txt).slice(1);
+ const saved=JSON.parse(localStorage.getItem(currentCategory)||"{}");
+ index=saved.index||0;
+ content.innerText="準備OK";
 };
 
-// 問題
+document.getElementById('start').onclick=()=>next();
+
+document.getElementById('show').onclick=()=>showAnswer();
+
+function speak(t){
+ let u=new SpeechSynthesisUtterance(t);
+ u.lang='ja-JP'; synth.speak(u);
+}
+
 function next(){
-    if(data.length===0){
-        content.innerText="COMPLETE";
-        return;
-    }
-
-    if(index>=data.length) index=0;
-
-    isAnswering=false;
-    btns.style.display="none";
-
-    show("解説", data[index][0]);
-
-    startListening();
+ if(index>=data.length) index=0;
+ label.innerText="問題";
+ content.innerText=data[index][0];
+ speak(data[index][0]);
+ startListen();
 }
 
-// 回答表示
 function showAnswer(){
-    isAnswering=true;
-    btns.style.display="block";
-
-    show("回答", data[index][1]);
+ label.innerText="回答";
+ content.innerText=data[index][1];
+ speak(data[index][1]);
 }
 
-// 表示＋読み上げ
-function show(l,t){
-    label.innerText=l;
-    content.innerText=t;
-
-    let text=t;
-    for(let k in dict){
-        text=text.replaceAll(k,dict[k]);
-    }
-
-    let u=new SpeechSynthesisUtterance(text);
-    u.lang="ja-JP";
-    synth.speak(u);
-}
-
-// 音声認識
-rec.onresult=(e)=>{
-    let r=e.results[0][0].transcript;
-    voice.innerText="認識: "+r;
-
-    if(!isAnswering){
-        if(r.includes("答え")){
-            showAnswer();
-        }
-    }else{
-        if(r.includes("まだ")) answer(false);
-        if(r.includes("おぼえた")||r.includes("覚えた")) answer(true);
-        if(r.includes("前")) prevQuestion();
-    }
-};
-
-rec.onend=()=> setTimeout(()=>rec.start(),500);
-
-function startListening(){
-    try{ rec.start(); }catch{}
-}
-
-// 回答処理
 function answer(ok){
-    let learned = JSON.parse(localStorage.getItem("learned_"+currentCategory)||"[]");
-
-    if(ok){
-        learned.push(data[index][1]);
-        data.splice(index,1);
-    }else{
-        index++;
-    }
-
-    localStorage.setItem("learned_"+currentCategory,JSON.stringify(learned));
-    localStorage.setItem("index_"+currentCategory,index);
-
-    next();
+ let store=JSON.parse(localStorage.getItem(currentCategory)||"{}");
+ if(ok){
+   if(!store.learned) store.learned=[];
+   store.learned.push(index);
+ }
+ index++;
+ store.index=index;
+ localStorage.setItem(currentCategory, JSON.stringify(store));
+ next();
 }
 
-// 前へ
-function prevQuestion(){
-    if(index>0) index--;
-    next();
+function prev(){
+ if(index>0) index--;
+ showAnswer();
 }
 
-// リセット（カテゴリ単位）
 function resetCategory(){
-    if(confirm("このカテゴリをリセット？")){
-        localStorage.removeItem("learned_"+currentCategory);
-        localStorage.removeItem("index_"+currentCategory);
-        location.reload();
-    }
+ localStorage.removeItem(currentCategory);
+ alert("リセット完了");
 }
-</script>
 
+if(recognition){
+ recognition.onresult=(e)=>{
+   let t=e.results[0][0].transcript;
+   voice.innerText=t;
+   if(t.includes("まだ")) answer(false);
+   else if(t.includes("覚え")||t.includes("おぼえ")) answer(true);
+   else if(t.includes("前")) prev();
+   else if(t.includes("答え")||t.includes("こたえ")) showAnswer();
+ };
+}
+
+function startListen(){
+ if(recognition) try{recognition.start()}catch{}
+}
+
+function parseCSV(t){return t.split('\n').map(r=>r.split(','));}
+
+card.onclick=()=>showAnswer();
+</script>
 </body>
 </html>
