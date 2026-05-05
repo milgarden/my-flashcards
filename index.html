@@ -1,130 +1,285 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AWS SAA 改良版</title>
-<style>
-body { font-family: -apple-system, sans-serif; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; margin:0; background:#f0f2f5; }
-#card { background:white; width:92%; max-width:500px; min-height:320px; display:flex; flex-direction:column; justify-content:center; align-items:center; border-radius:20px; padding:20px; text-align:center; cursor:pointer; }
-.label { color:#007aff; font-weight:bold; margin-bottom:10px; }
-.content { font-size:1.3rem; font-weight:bold; }
-#controls { margin-top:20px; display:flex; flex-direction:column; align-items:center; gap:10px; width:100%; }
-button { padding:12px 20px; border:none; border-radius:10px; font-size:1rem; cursor:pointer; }
-.correct { background:#34c759; color:white; }
-.wrong { background:#ff3b30; color:white; }
-.prev { background:#ff9500; color:white; }
-.show { background:#5856d6; color:white; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AWS SAA 攻略単語帳 Pro+ Voice</title>
+    <style>
+        body { font-family: -apple-system, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; background: #f0f2f5; overflow: hidden; }
+        #card { background: white; width: 92%; max-width: 500px; min-height: 350px; display: flex; flex-direction: column; justify-content: center; align-items: center; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); text-align: center; padding: 30px; box-sizing: border-box; position: relative; cursor: pointer; }
+        .label { color: #007aff; font-size: 1rem; font-weight: 600; margin-bottom: 15px; }
+        .content { color: #1c1c1e; font-size: clamp(1.1rem, 4vw, 1.6rem); font-weight: bold; line-height: 1.6; width: 100%; word-break: break-all; white-space: pre-wrap; }
+        #controls { margin-top: 25px; display: flex; flex-direction: column; align-items: center; gap: 15px; width: 100%; }
+        select { padding: 12px; font-size: 1rem; border-radius: 10px; border: 1px solid #ccc; width: 80%; max-width: 300px; background: white; }
+        .btn-group { display: none; gap: 20px; width: 100%; justify-content: center; margin-top: 15px; }
+        button { padding: 15px 30px; font-size: 1.2rem; border: none; border-radius: 15px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        #start-btn { background: #007aff; color: white; }
+        #wait-btn { background: #8e8e93; color: white; display: none; }
+        #show-answer-btn { background: #5856d6; color: white; display: none; }
+        .correct-btn { background: #34c759; color: white; flex: 1; max-width: 140px; }
+        .wrong-btn { background: #ff3b30; color: white; flex: 1; max-width: 140px; }
+        #stats { margin-top: 10px; font-size: 0.9rem; color: #666; }
+        #voice-status { font-size: 0.8rem; color: #007aff; font-weight: bold; min-height: 1em; }
+        #reset-btn { margin-top: 20px; background: none; color: #999; font-size: 0.8rem; text-decoration: underline; padding: 5px; }
+        .skip-hint { position: absolute; bottom: 15px; font-size: 0.7rem; color: #ccc; }
+    </style>
 </head>
 <body>
-<div id="card">
-<div id="label" class="label">READY</div>
-<div id="content" class="content">カテゴリを選択</div>
-<div id="voice"></div>
-</div>
-<div id="controls">
-<select id="category"></select>
-<button id="start">開始</button>
-<button id="show" class="show">答え</button>
-<div id="actions">
-<button class="wrong" onclick="answer(false)">まだ</button>
-<button class="correct" onclick="answer(true)">覚えた</button>
-<button class="prev" onclick="prev()">前</button>
-</div>
-<button onclick="resetCategory()">カテゴリリセット</button>
-</div>
-<script src="dict.js"></script>
-<script src="config.js"></script>
-<script>
-const synth = speechSynthesis;
-const rec = window.SpeechRecognition||window.webkitSpeechRecognition;
-const recognition = rec? new rec():null;
-if(recognition){ recognition.lang='ja-JP'; }
 
-let data=[], index=0, currentCategory="";
-const label=document.getElementById('label');
-const content=document.getElementById('content');
-const voice=document.getElementById('voice');
-const select=document.getElementById('category');
+    <div id="card">
+        <div id="label" class="label">神田ジィジの単語帳～READY</div>
+        <div id="label" class="label">READY</div>
+        <div id="content" class="content">カテゴリを選択してください</div>
+        <div id="voice-status"></div>
+        <div class="skip-hint">読み上げ中にタップでスキップ</div>
+    </div>
 
-categoryFiles.forEach(c=>{
- let o=document.createElement('option'); o.value=c.file; o.textContent=c.name; select.appendChild(o);
-});
+    <div id="controls">
+        <select id="category-select">
+            <option value="">-- カテゴリを選択 --</option>
+        </select>
+        <button id="start-btn" style="display:none;">学習を開始する</button>
+        <button id="wait-btn" onclick="pauseTimer()">ちょっと待って！</button>
+        <button id="show-answer-btn" onclick="resumeToAnswer()">回答を見る</button>
+        <div id="btn-group" class="btn-group">
+            <button class="wrong-btn" onclick="handleResult(false)">❌ まだ</button>
+            <button class="correct-btn" onclick="handleResult(true)">⭕️ おぼえた</button>
+        </div>
+        <div id="stats"></div>
+        <button id="reset-btn" onclick="resetMemory()">学習記録をリセット</button>
+    </div>
 
-select.onchange=async()=>{
- currentCategory=select.value;
- const res=await fetch(currentCategory);
- const txt=await res.text();
- data=parseCSV(txt).slice(1);
- const saved=JSON.parse(localStorage.getItem(currentCategory)||"{}");
- index=saved.index||0;
- content.innerText="準備OK";
-};
+    <script src="dict.js"></script>
+    <script src="config.js"></script>
 
-document.getElementById('start').onclick=()=>next();
+    <script>
+        const labelEl = document.getElementById('label');
+        const contentEl = document.getElementById('content');
+        const voiceStatusEl = document.getElementById('voice-status');
+        const categorySelect = document.getElementById('category-select');
+        const startBtn = document.getElementById('start-btn');
+        const waitBtn = document.getElementById('wait-btn');
+        const showBtn = document.getElementById('show-answer-btn');
+        const btnGroup = document.getElementById('btn-group');
+        const statsEl = document.getElementById('stats');
+        const synth = window.speechSynthesis;
+        
+        // 音声認識のセットアップ
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = SpeechRecognition ? new SpeechRecognition() : null;
+        if (recognition) {
+            recognition.lang = 'ja-JP';
+            recognition.interimResults = false;
+            recognition.continuous = false;
+        }
 
-document.getElementById('show').onclick=()=>showAnswer();
+        let dataRows = [];
+        let currentIndex = 0;
+        let resolvePlay;
+        let timerId = null;
+        let isAnswering = false;
+        let isPaused = false;
 
-function speak(t){
- let u=new SpeechSynthesisUtterance(t);
- u.lang='ja-JP'; synth.speak(u);
-}
+        if (typeof categoryFiles !== 'undefined') {
+            categoryFiles.forEach(item => {
+                const opt = document.createElement('option');
+                opt.value = item.file;
+                opt.textContent = item.name;
+                categorySelect.appendChild(opt);
+            });
+        }
 
-function next(){
- if(index>=data.length) index=0;
- label.innerText="問題";
- content.innerText=data[index][0];
- speak(data[index][0]);
- startListen();
-}
+        // CSVパース
+        function parseCSV(text) {
+            const result = [];
+            let row = [];
+            let cell = "";
+            let inQuotes = false;
+            for (let i = 0; i < text.length; i++) {
+                let char = text[i];
+                let nextChar = text[i+1];
+                if (inQuotes) {
+                    if (char === '"' && nextChar === '"') { cell += '"'; i++; }
+                    else if (char === '"') { inQuotes = false; }
+                    else { cell += char; }
+                } else {
+                    if (char === '"') { inQuotes = true; }
+                    else if (char === ',') { row.push(cell); cell = ""; }
+                    else if (char === '\n' || (char === '\r' && nextChar === '\n')) {
+                        row.push(cell); result.push(row); row = []; cell = "";
+                        if (char === '\r') i++;
+                    } else { cell += char; }
+                }
+            }
+            if (row.length > 0 || cell !== "") { row.push(cell); result.push(row); }
+            return result;
+        }
 
-function showAnswer(){
- label.innerText="回答";
- content.innerText=data[index][1];
- speak(data[index][1]);
-}
+        categorySelect.addEventListener('change', async (e) => {
+            const fileName = e.target.value;
+            if (!fileName) return;
+            try {
+                const response = await fetch(fileName);
+                const text = await response.text();
+                const allRows = parseCSV(text);
+                const rawData = allRows.slice(1).filter(r => r.length >= 2 && r[0].trim());
+                const learnedWords = JSON.parse(localStorage.getItem('learnedWords') || '[]');
+                dataRows = rawData.filter(row => !learnedWords.includes(row[1].trim()));
+                startBtn.style.display = dataRows.length > 0 ? 'block' : 'none';
+                contentEl.innerText = dataRows.length > 0 ? `${categorySelect.selectedOptions[0].text}\n全 ${dataRows.length} 問` : "未習得なし";
+                updateStats();
+            } catch (err) { console.error(err); }
+        });
 
-function answer(ok){
- let store=JSON.parse(localStorage.getItem(currentCategory)||"{}");
- if(ok){
-   if(!store.learned) store.learned=[];
-   store.learned.push(index);
- }
- index++;
- store.index=index;
- localStorage.setItem(currentCategory, JSON.stringify(store));
- next();
-}
+        startBtn.addEventListener('click', () => {
+            startBtn.style.display = 'none';
+            categorySelect.style.display = 'none';
+            synth.speak(new SpeechSynthesisUtterance("")); // ダミー再生（iOS対策）
+            nextQuestion();
+        });
 
-function prev(){
- if(index>0) index--;
- showAnswer();
-}
+        async function nextQuestion() {
+            if (dataRows.length === 0) {
+                labelEl.innerText = "COMPLETE";
+                contentEl.innerText = "全て覚えました！";
+                btnGroup.style.display = 'none';
+                categorySelect.style.display = 'block';
+                return;
+            }
+            if (currentIndex >= dataRows.length) currentIndex = 0;
+            const row = dataRows[currentIndex];
+            updateStats();
+            isAnswering = false;
+            isPaused = false;
+            btnGroup.style.display = 'none';
+            showBtn.style.display = 'none';
+            waitBtn.style.display = 'block';
+            
+            await playCard("【 解説 】", row[0], 1000); 
+            waitBtn.style.display = 'none';
+            if (isPaused) return; 
+            showAnswer();
+        }
 
-function resetCategory(){
- localStorage.removeItem(currentCategory);
- alert("リセット完了");
-}
+        async function showAnswer() {
+            const row = dataRows[currentIndex];
+            isAnswering = true;
+            btnGroup.style.display = 'flex';
+            await playCard("【 回答 】", row[1], 0000); 
+            
+            // 回答の読み上げが終わったら音声認識を開始
+            startListening();
+        }
 
-if(recognition){
- recognition.onresult=(e)=>{
-   let t=e.results[0][0].transcript;
-   voice.innerText=t;
-   if(t.includes("まだ")) answer(false);
-   else if(t.includes("覚え")||t.includes("おぼえ")) answer(true);
-   else if(t.includes("前")) prev();
-   else if(t.includes("答え")||t.includes("こたえ")) showAnswer();
- };
-}
+        // --- 音声認識ロジック ---
+        function startListening() {
+            if (!recognition || !isAnswering) return;
+            voiceStatusEl.innerText = "🎤 聞き取り中...（「まだ」or「おぼえた」）";
+            try {
+                recognition.start();
+            } catch (e) { /* すでに開始している場合は無視 */ }
+        }
 
-function startListen(){
- if(recognition) try{recognition.start()}catch{}
-}
+        if (recognition) {
+            recognition.onresult = (event) => {
+                const speechResult = event.results[0][0].transcript;
+                voiceStatusEl.innerText = `認識結果: 「${speechResult}」`;
+                
+                if (speechResult.includes("まだ")) {
+                    handleResult(false);
+                } else if (speechResult.includes("おぼえた") || speechResult.includes("覚えた") || speechResult.includes("覚えた")) {
+                    handleResult(true);
+                } else {
+                    // 判定不能な場合は再度聞き取り
+                    setTimeout(startListening, 1000);
+                }
+            };
 
-function parseCSV(t){return t.split('\n').map(r=>r.split(','));}
+            recognition.onerror = () => {
+                voiceStatusEl.innerText = "";
+                // エラー（沈黙など）でも回答画面なら聞き取りを再開
+                if (isAnswering) setTimeout(startListening, 500);
+            };
+            
+            recognition.onend = () => {
+                if (isAnswering && voiceStatusEl.innerText.includes("聞き取り中")) {
+                    startListening();
+                }
+            };
+        }
 
-card.onclick=()=>showAnswer();
-</script>
+        function handleResult(isCorrect) {
+            if (!isAnswering) return;
+            isAnswering = false; // 二重動作防止
+            synth.cancel(); 
+            if (recognition) recognition.stop();
+            voiceStatusEl.innerText = "";
+            btnGroup.style.display = 'none';
+            
+            if (isCorrect) {
+                const learnedWords = JSON.parse(localStorage.getItem('learnedWords') || '[]');
+                learnedWords.push(dataRows[currentIndex][1].trim());
+                localStorage.setItem('learnedWords', JSON.stringify(learnedWords));
+                dataRows.splice(currentIndex, 1); 
+            } else {
+                currentIndex++; 
+            }
+            nextQuestion();
+        }
+
+        // --- その他共通ロジック ---
+        function pauseTimer() {
+            isPaused = true;
+            if (timerId) { clearTimeout(timerId); timerId = null; }
+            waitBtn.style.display = 'none';
+            showBtn.style.display = 'block';
+            contentEl.innerText += "\n\n(考え中...)";
+        }
+
+        function resumeToAnswer() {
+            showBtn.style.display = 'none';
+            isPaused = false;
+            showAnswer();
+        }
+
+        function playCard(label, text, delay) {
+            return new Promise((resolve) => {
+                resolvePlay = resolve;
+                labelEl.innerText = label;
+                contentEl.innerText = text;
+                let speechText = text;
+                if (typeof dict !== 'undefined') {
+                    for (const [k, v] of Object.entries(dict)) {
+                        speechText = speechText.replace(new RegExp(k, 'gi'), v);
+                    }
+                }
+                const utter = new SpeechSynthesisUtterance(speechText);
+                utter.lang = 'ja-JP';
+                utter.onend = () => {
+                    timerId = setTimeout(() => { timerId = null; resolve(); }, delay);
+                };
+                utter.onerror = () => resolve();
+                synth.speak(utter);
+            });
+        }
+
+        function updateStats() {
+            statsEl.innerText = `未習得: ${dataRows.length} 問`;
+        }
+
+        function resetMemory() {
+            if (confirm("全カテゴリの学習記録をリセットしますか？")) {
+                localStorage.removeItem('learnedWords');
+                location.reload();
+            }
+        }
+
+        document.getElementById('card').addEventListener('click', () => {
+            if (synth.speaking) {
+                synth.cancel(); 
+                if (resolvePlay) resolvePlay(); 
+            }
+        });
+    </script>
 </body>
 </html>
