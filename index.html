@@ -3,99 +3,97 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AWS SAA 攻略単語帳 Pro+ Voice</title>
+<title>AWS SAA 改良版　20260506</title>
 
 <style>
 body {
     font-family: -apple-system, sans-serif;
-    display:flex; flex-direction:column;
-    align-items:center; justify-content:center;
-    min-height:100vh; margin:0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    min-height:100vh;
+    margin:0;
     background:#f0f2f5;
 }
 
 #card {
     background:white;
-    width:92%; max-width:500px;
+    width:92%;
+    max-width:500px;
     min-height:350px;
-    display:flex; flex-direction:column;
-    justify-content:center; align-items:center;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
     border-radius:30px;
     padding:30px;
     text-align:center;
     cursor:pointer;
 }
 
-.label { color:#007aff; font-weight:600; margin-bottom:10px; }
-.content { font-size:1.4rem; font-weight:bold; white-space:pre-wrap; }
+.label { color:#007aff; font-weight:bold; }
+.content { font-size:1.3rem; font-weight:bold; }
 
-#controls { margin-top:20px; display:flex; flex-direction:column; align-items:center; gap:12px; width:100%; }
+#controls {
+    margin-top:20px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:10px;
+    width:100%;
+}
 
 button {
     padding:12px 20px;
     border:none;
-    border-radius:12px;
-    font-size:1.1rem;
+    border-radius:10px;
+    font-size:1rem;
     cursor:pointer;
 }
 
-.answer-btn { background:#5856d6; color:white; }
 .correct { background:#34c759; color:white; }
 .wrong { background:#ff3b30; color:white; }
 .prev { background:#ff9500; color:white; }
+.answer { background:#5856d6; color:white; }
 
-.btn-row { display:none; gap:10px; }
-
-#voice-status { font-size:0.8rem; color:#007aff; }
 </style>
 </head>
 
 <body>
 
 <div id="card">
-<div id="label" class="label">READY</div>
-<div id="content" class="content">カテゴリを選択してください</div>
-<div id="voice-status"></div>
+    <div id="label" class="label">READY</div>
+    <div id="content" class="content">カテゴリを選択してください</div>
+    <div id="voice-status"></div>
 </div>
 
 <div id="controls">
-<select id="category-select">
-<option value="">-- カテゴリを選択 --</option>
-</select>
+    <select id="category-select"></select>
+    <button id="start-btn">開始</button>
 
-<button id="start-btn">学習開始</button>
+    <!-- 質問用 -->
+    <button id="answer-btn" class="answer" style="display:none;">こたえ</button>
 
-<button id="answer-btn" class="answer-btn" style="display:none;">こたえ</button>
+    <!-- 回答用 -->
+    <div id="answer-group" style="display:none;">
+        <button class="wrong" onclick="handleResult(false)">まだ</button>
+        <button class="correct" onclick="handleResult(true)">覚えた</button>
+        <button class="prev" onclick="goPrev()">前</button>
+    </div>
 
-<div id="answer-buttons" class="btn-row">
-<button class="wrong">まだ</button>
-<button class="correct">覚えた</button>
-<button class="prev">前</button>
-</div>
-
-<button id="reset-btn">カテゴリリセット</button>
+    <button onclick="resetCategory()">カテゴリリセット</button>
 </div>
 
 <script src="dict.js"></script>
 <script src="config.js"></script>
 
 <script>
-const labelEl = document.getElementById('label');
-const contentEl = document.getElementById('content');
-const voiceStatusEl = document.getElementById('voice-status');
-const categorySelect = document.getElementById('category-select');
-
-const startBtn = document.getElementById('start-btn');
-const answerBtn = document.getElementById('answer-btn');
-const answerButtons = document.getElementById('answer-buttons');
-const resetBtn = document.getElementById('reset-btn');
-
 const synth = speechSynthesis;
-
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 const recognition = SpeechRecognition ? new SpeechRecognition() : null;
 
-if (recognition) {
+if(recognition){
     recognition.lang = 'ja-JP';
 }
 
@@ -104,102 +102,113 @@ let currentIndex = 0;
 let currentCategory = "";
 let isAnswering = false;
 
-/* カテゴリ生成 */
-categoryFiles.forEach(item => {
+const labelEl = document.getElementById('label');
+const contentEl = document.getElementById('content');
+const voiceEl = document.getElementById('voice-status');
+
+const categorySelect = document.getElementById('category-select');
+const answerBtn = document.getElementById('answer-btn');
+const answerGroup = document.getElementById('answer-group');
+
+
+// カテゴリ生成
+categoryFiles.forEach(c=>{
     const opt = document.createElement('option');
-    opt.value = item.file;
-    opt.textContent = item.name;
+    opt.value = c.file;
+    opt.textContent = c.name;
     categorySelect.appendChild(opt);
 });
 
-/* CSV */
-function parseCSV(text) {
-    return text.split('\n').map(r => r.split(','));
+
+// CSV
+function parseCSV(text){
+    return text.split("\n").map(r=>r.split(","));
 }
 
-/* カテゴリ選択 */
-categorySelect.addEventListener('change', async (e) => {
-    currentCategory = e.target.value;
-    if (!currentCategory) return;
+
+// カテゴリ選択
+categorySelect.onchange = async ()=>{
+    currentCategory = categorySelect.value;
 
     const res = await fetch(currentCategory);
     const text = await res.text();
-
-    const rows = parseCSV(text).slice(1);
+    dataRows = parseCSV(text).slice(1);
 
     const saved = JSON.parse(localStorage.getItem(currentCategory) || "{}");
-
     currentIndex = saved.index || 0;
-    const learned = saved.learned || [];
 
-    dataRows = rows.filter((r, i) => !learned.includes(i));
+    contentEl.innerText = "準備OK";
+};
 
-    contentEl.innerText = `全 ${dataRows.length} 問`;
-});
 
-/* 開始 */
-startBtn.onclick = () => {
+// 開始
+document.getElementById('start-btn').onclick = ()=>{
     nextQuestion();
 };
 
-/* 問題表示 */
-function nextQuestion() {
-    if (currentIndex >= dataRows.length) currentIndex = 0;
 
-    const row = dataRows[currentIndex];
+// 問題表示
+function nextQuestion(){
+    if(currentIndex >= dataRows.length) currentIndex = 0;
+
+    labelEl.innerText = "問題";
+    contentEl.innerText = dataRows[currentIndex][0];
+
+    speak(dataRows[currentIndex][0]);
 
     isAnswering = false;
 
-    labelEl.innerText = "問題";
-    contentEl.innerText = row[0];
-
     answerBtn.style.display = "block";
-    answerButtons.style.display = "none";
-
-    speak(row[0]);
-}
-
-/* 回答表示 */
-function showAnswer() {
-    const row = dataRows[currentIndex];
-
-    isAnswering = true;
-
-    labelEl.innerText = "回答";
-    contentEl.innerText = row[1];
-
-    answerBtn.style.display = "none";
-    answerButtons.style.display = "flex";
-
-    speak(row[1]);
+    answerGroup.style.display = "none";
 
     startListening();
 }
 
-/* 音声 */
-function speak(text) {
+
+// 回答表示
+function showAnswer(){
+    labelEl.innerText = "回答";
+    contentEl.innerText = dataRows[currentIndex][1];
+
+    speak(dataRows[currentIndex][1]);
+
+    isAnswering = true;
+
+    answerBtn.style.display = "none";
+    answerGroup.style.display = "block";
+
+    startListening();
+}
+
+
+// 音声
+function speak(text){
     let t = text;
-    if (typeof dict !== 'undefined') {
-        for (const [k,v] of Object.entries(dict)) {
-            t = t.replace(new RegExp(k,'gi'),v);
+
+    if(typeof dict !== 'undefined'){
+        for(const [k,v] of Object.entries(dict)){
+            t = t.replace(new RegExp(k,'gi'), v);
         }
     }
+
     const u = new SpeechSynthesisUtterance(t);
-    u.lang = "ja-JP";
+    u.lang = 'ja-JP';
     synth.speak(u);
 }
 
-/* 判定 */
-function handleResult(correct) {
-    const store = JSON.parse(localStorage.getItem(currentCategory) || "{}");
 
-    if (correct) {
-        if (!store.learned) store.learned = [];
+// 判定
+function handleResult(ok){
+    if(!isAnswering) return;
+
+    let store = JSON.parse(localStorage.getItem(currentCategory)||"{}");
+
+    if(ok){
+        if(!store.learned) store.learned = [];
         store.learned.push(currentIndex);
-    } else {
-        currentIndex++;
     }
 
+    currentIndex++;
     store.index = currentIndex;
 
     localStorage.setItem(currentCategory, JSON.stringify(store));
@@ -207,50 +216,46 @@ function handleResult(correct) {
     nextQuestion();
 }
 
-/* 前 */
-function prevQuestion() {
-    if (currentIndex > 0) currentIndex--;
+
+// 前へ
+function goPrev(){
+    if(currentIndex > 0) currentIndex--;
     showAnswer();
 }
 
-/* ボタン */
-document.querySelector('.wrong').onclick = () => handleResult(false);
-document.querySelector('.correct').onclick = () => handleResult(true);
-document.querySelector('.prev').onclick = prevQuestion;
-answerBtn.onclick = showAnswer;
 
-/* 音声認識 */
-function startListening() {
-    if (!recognition) return;
-    try { recognition.start(); } catch {}
+// カテゴリリセット
+function resetCategory(){
+    localStorage.removeItem(currentCategory);
+    alert("カテゴリリセット完了");
 }
 
-if (recognition) {
-    recognition.onresult = (e) => {
-        const t = e.results[0][0].transcript;
-        voiceStatusEl.innerText = t;
 
-        if (t.includes("まだ")) handleResult(false);
-        else if (t.includes("覚え") || t.includes("おぼえ")) handleResult(true);
-        else if (t.includes("前")) prevQuestion();
-        else if (t.includes("答え") || t.includes("こたえ")) showAnswer();
+// 音声認識
+function startListening(){
+    if(!recognition) return;
+
+    try{ recognition.start(); }catch{}
+}
+
+if(recognition){
+    recognition.onresult = (e)=>{
+        const t = e.results[0][0].transcript;
+        voiceEl.innerText = t;
+
+        if(t.includes("まだ")) handleResult(false);
+        else if(t.includes("覚え") || t.includes("おぼえ")) handleResult(true);
+        else if(t.includes("前")) goPrev();
+        else if(t.includes("答え") || t.includes("こたえ")) showAnswer();
     };
 }
 
-/* カードタップ → 回答 */
-document.getElementById('card').onclick = () => {
-    if (!isAnswering) showAnswer();
+
+// タップで回答
+document.getElementById('card').onclick = ()=>{
+    if(!isAnswering) showAnswer();
 };
 
-/* リセット（カテゴリ単位） */
-resetBtn.onclick = () => {
-    if (!currentCategory) return;
-    if (confirm("このカテゴリをリセットしますか？")) {
-        localStorage.removeItem(currentCategory);
-        location.reload();
-    }
-};
 </script>
-
 </body>
 </html>
