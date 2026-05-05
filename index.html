@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AWS SAA 攻略単語帳 Pro+ Voice</title>
+<title>AWS SAA 単語帳 Pro+</title>
 
 <style>
 body {
@@ -13,6 +13,7 @@ body {
     min-height: 100vh; margin: 0;
     background: #f0f2f5;
 }
+
 #card {
     background: white;
     width: 92%; max-width: 500px;
@@ -22,22 +23,19 @@ body {
     border-radius: 30px;
     box-shadow: 0 15px 35px rgba(0,0,0,0.1);
     text-align: center; padding: 30px;
-    position: relative; cursor: pointer;
 }
-.label { color:#007aff; font-weight:600; margin-bottom:15px; }
-.content { font-size:1.4rem; font-weight:bold; white-space:pre-wrap; }
 
-#controls { margin-top:20px; text-align:center; }
-button {
-    padding:12px 20px; margin:5px;
-    border:none; border-radius:10px;
-    font-weight:bold; cursor:pointer;
-}
-.correct-btn { background:#34c759; color:white; }
-.wrong-btn { background:#ff3b30; color:white; }
-.prev-btn { background:#999; color:white; }
+.label { color:#007aff; font-weight:bold; margin-bottom:10px;}
+.content { font-size:1.4rem; font-weight:bold; white-space:pre-wrap;}
 
-#voice-status { font-size:0.8rem; color:#007aff; }
+#controls { margin-top:20px; text-align:center;}
+button { padding:12px 20px; margin:5px; border:none; border-radius:10px; cursor:pointer;}
+
+.correct { background:#34c759; color:white;}
+.wrong { background:#ff3b30; color:white;}
+.prev { background:#aaa; color:white;}
+
+#voice-status { font-size:0.9rem; margin-top:10px;}
 </style>
 </head>
 
@@ -45,181 +43,163 @@ button {
 
 <div id="card">
     <div id="label" class="label">READY</div>
-    <div id="content" class="content">カテゴリを選択</div>
+    <div id="content" class="content">カテゴリ選択</div>
     <div id="voice-status"></div>
 </div>
 
 <div id="controls">
-    <select id="category-select"></select>
-    <button id="start-btn" style="display:none;">開始</button>
+    <select id="category"></select><br>
+    <button id="start">開始</button><br>
 
-    <div id="answer-buttons" style="display:none;">
-        <button class="wrong-btn" onclick="handleResult(false)">❌</button>
-        <button class="correct-btn" onclick="handleResult(true)">⭕️</button>
-        <button class="prev-btn" onclick="goPrev()">← 前</button>
+    <div id="answerBtns" style="display:none;">
+        <button class="wrong" onclick="answer(false)">❌</button>
+        <button class="correct" onclick="answer(true)">⭕</button>
+        <button class="prev" onclick="prevQuestion()">⬅️ 前</button>
     </div>
 
-    <div id="stats"></div>
-    <button onclick="resetCategory()">カテゴリリセット</button>
+    <button onclick="resetCategory()">このカテゴリをリセット</button>
 </div>
 
-<script src="dict.js"></script>
 <script src="config.js"></script>
+<script src="dict.js"></script>
 
 <script>
-const labelEl = document.getElementById('label');
-const contentEl = document.getElementById('content');
-const voiceStatusEl = document.getElementById('voice-status');
-const categorySelect = document.getElementById('category-select');
-const startBtn = document.getElementById('start-btn');
-const answerButtons = document.getElementById('answer-buttons');
-
 const synth = speechSynthesis;
-
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-const recognition = SpeechRecognition ? new SpeechRecognition() : null;
+const rec = new SpeechRecognition();
 
-if (recognition) {
-    recognition.lang = 'ja-JP';
-}
+rec.lang = 'ja-JP';
 
-let dataRows = [];
-let currentIndex = 0;
+let data = [];
+let index = 0;
 let currentCategory = "";
+let isAnswering = false;
 
-function getStorageKey() {
-    return "learned_" + currentCategory;
-}
+// UI
+const label = document.getElementById("label");
+const content = document.getElementById("content");
+const voice = document.getElementById("voice-status");
+const btns = document.getElementById("answerBtns");
 
 // カテゴリ生成
-categoryFiles.forEach(c => {
-    const opt = document.createElement("option");
-    opt.value = c.file;
-    opt.textContent = c.name;
-    categorySelect.appendChild(opt);
+categoryFiles.forEach(c=>{
+    let opt=document.createElement("option");
+    opt.value=c.file;
+    opt.textContent=c.name;
+    document.getElementById("category").appendChild(opt);
 });
 
-categorySelect.onchange = async () => {
-    currentCategory = categorySelect.value;
-    const res = await fetch(currentCategory);
-    const text = await res.text();
-
-    const rows = text.split("\n").slice(1).map(r=>r.split(","));
-    const learned = JSON.parse(localStorage.getItem(getStorageKey())||"[]");
-
-    dataRows = rows.filter(r => r[1] && !learned.includes(r[1].trim()));
-
-    startBtn.style.display = dataRows.length ? "block":"none";
-    contentEl.innerText = `問題数: ${dataRows.length}`;
-};
-
-startBtn.onclick = () => {
-    startBtn.style.display="none";
-    categorySelect.style.display="none";
-    nextQuestion();
-};
-
-function speak(text, callback) {
-    let t = text;
-    for (const [k,v] of Object.entries(dict||{})) {
-        t = t.replace(new RegExp(k,'g'), v);
-    }
-    const u = new SpeechSynthesisUtterance(t);
-    u.lang="ja-JP";
-    u.onend = callback;
-    synth.speak(u);
+// CSV
+function parseCSV(t){
+    return t.split("\n").map(r=>r.split(","));
 }
 
-function nextQuestion() {
-    if (!dataRows.length) {
-        contentEl.innerText = "COMPLETE！";
+// 開始
+document.getElementById("start").onclick = async ()=>{
+    currentCategory = document.getElementById("category").value;
+    let res = await fetch(currentCategory);
+    let text = await res.text();
+
+    let rows = parseCSV(text).slice(1);
+
+    let learned = JSON.parse(localStorage.getItem("learned_"+currentCategory)||"[]");
+    data = rows.filter(r=>!learned.includes(r[1]));
+
+    index = Number(localStorage.getItem("index_"+currentCategory)||0);
+
+    next();
+};
+
+// 問題
+function next(){
+    if(data.length===0){
+        content.innerText="COMPLETE";
         return;
     }
 
-    if (currentIndex >= dataRows.length) currentIndex = 0;
+    if(index>=data.length) index=0;
 
-    const row = dataRows[currentIndex];
+    isAnswering=false;
+    btns.style.display="none";
 
-    labelEl.innerText="問題";
-    contentEl.innerText=row[0];
+    show("解説", data[index][0]);
 
-    answerButtons.style.display="none";
-
-    speak(row[0], startListening);
+    startListening();
 }
 
-function showAnswer() {
-    const row = dataRows[currentIndex];
+// 回答表示
+function showAnswer(){
+    isAnswering=true;
+    btns.style.display="block";
 
-    labelEl.innerText="回答";
-    contentEl.innerText=row[1];
+    show("回答", data[index][1]);
+}
 
-    answerButtons.style.display="block";
+// 表示＋読み上げ
+function show(l,t){
+    label.innerText=l;
+    content.innerText=t;
 
-    speak(row[1], startListening);
+    let text=t;
+    for(let k in dict){
+        text=text.replaceAll(k,dict[k]);
+    }
+
+    let u=new SpeechSynthesisUtterance(text);
+    u.lang="ja-JP";
+    synth.speak(u);
 }
 
 // 音声認識
-function startListening() {
-    if (!recognition) return;
+rec.onresult=(e)=>{
+    let r=e.results[0][0].transcript;
+    voice.innerText="認識: "+r;
 
-    voiceStatusEl.innerText="🎤 待機中...";
-    try { recognition.start(); } catch(e){}
-}
-
-if (recognition) {
-    recognition.onresult = (e) => {
-        const text = e.results[0][0].transcript;
-        voiceStatusEl.innerText = "認識: " + text;
-
-        if (text.includes("答え")) {
+    if(!isAnswering){
+        if(r.includes("答え")){
             showAnswer();
         }
-        else if (text.includes("まだ")) {
-            handleResult(false);
-        }
-        else if (text.includes("おぼえた") || text.includes("覚えた")) {
-            handleResult(true);
-        }
-        else if (text.includes("前")) {
-            goPrev();
-        }
-        else {
-            setTimeout(startListening, 1000);
-        }
-    };
+    }else{
+        if(r.includes("まだ")) answer(false);
+        if(r.includes("おぼえた")||r.includes("覚えた")) answer(true);
+        if(r.includes("前")) prevQuestion();
+    }
+};
 
-    recognition.onend = () => {
-        setTimeout(startListening, 500);
-    };
+rec.onend=()=> setTimeout(()=>rec.start(),500);
+
+function startListening(){
+    try{ rec.start(); }catch{}
+}
+
+// 回答処理
+function answer(ok){
+    let learned = JSON.parse(localStorage.getItem("learned_"+currentCategory)||"[]");
+
+    if(ok){
+        learned.push(data[index][1]);
+        data.splice(index,1);
+    }else{
+        index++;
+    }
+
+    localStorage.setItem("learned_"+currentCategory,JSON.stringify(learned));
+    localStorage.setItem("index_"+currentCategory,index);
+
+    next();
 }
 
 // 前へ
-function goPrev() {
-    if (currentIndex > 0) currentIndex--;
-    nextQuestion();
-}
-
-// 判定
-function handleResult(correct) {
-    const learned = JSON.parse(localStorage.getItem(getStorageKey())||"[]");
-
-    if (correct) {
-        learned.push(dataRows[currentIndex][1].trim());
-        localStorage.setItem(getStorageKey(), JSON.stringify(learned));
-        dataRows.splice(currentIndex,1);
-    } else {
-        currentIndex++;
-    }
-
-    nextQuestion();
+function prevQuestion(){
+    if(index>0) index--;
+    next();
 }
 
 // リセット（カテゴリ単位）
-function resetCategory() {
-    if (!currentCategory) return;
-    if (confirm("このカテゴリをリセット？")) {
-        localStorage.removeItem(getStorageKey());
+function resetCategory(){
+    if(confirm("このカテゴリをリセット？")){
+        localStorage.removeItem("learned_"+currentCategory);
+        localStorage.removeItem("index_"+currentCategory);
         location.reload();
     }
 }
