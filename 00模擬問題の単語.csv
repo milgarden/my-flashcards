@@ -1,5 +1,5 @@
 FrontText,BackText,Comment,FrontTextLanguage,BackTextLanguage
-Lambdaの1回の実行時間の最大は何分,15分,移行,ja-JP,ja-JP
+ラムダLambdaの1回の実行時間の最大は何分,15分,移行,ja-JP,ja-JP
 ハイパフォーマンスコンピューティング（HPC）における三種の神器の一つで、①計算用サーバーの集まりを簡単に一括構築・管理するクラスター管理ツール,ParallelCluster,移行,ja-JP,ja-JP
 ハイパフォーマンスコンピューティング（HPC）における三種の神器の一つで、②サーバー間のデータ転送の遅延を極限まで減らします,EFA（Elastic Fabric Adapter）,移行,ja-JP,ja-JP
 ハイパフォーマンスコンピューティング（HPC）における三種の神器の一つで、③複数のサーバー間でデータをやり取りしながら並列計算する,MPI（Message Passing Interface）,移行,ja-JP,ja-JP
