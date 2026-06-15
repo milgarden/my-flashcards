@@ -1,6 +1,6 @@
 // config.js
 const categoryFiles = [
-    { name: "00模擬問題", file: "00模擬問題.csv" },
+    { name: "00模擬問題の単語", file: "00模擬問題の単語.csv" },
     { name: "01-03new_Architecture_Overview", file: "01-03new_Architecture_Overview.csv" },
     { name: "01-03_全体像 - s", file: "01-03_全体像 - s.csv" },
     { name: "04-IAM - g", file: "04-IAM - g.csv" },
